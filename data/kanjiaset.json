@@ -1,0 +1,19 @@
+{
+    "code": 0,
+    "data": [
+        {
+            "goodsId": 6765,
+            "helpPriceMax": 10.00,
+            "helpPriceMin": 1.00,
+            "helpTimes": 2,
+            "minPrice": 82.00,
+            "number": 676500,
+            "numberBuy": 121,
+            "originalPrice": 100.00,
+            "reduction": false,
+            "status": 0,
+            "statusStr": "正常"
+        }
+    ],
+    "msg": "success"
+}

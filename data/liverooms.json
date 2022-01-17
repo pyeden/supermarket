@@ -1,0 +1,57 @@
+{
+    "code": 0,
+    "data": [
+        {
+            "close_comment": 0,
+            "close_kf": 1,
+            "is_feeds_public": 1,
+            "anchor_name": "梦佳",
+            "close_like": 0,
+            "live_type": 0,
+            "roomid": 15,
+            "feeds_img": "http://mmbiz.qpic.cn/mmbiz_jpg/EtdfuZTLxu7icGKBgc8oDZ1AcIdNXWeGekK2njKvicXLz0iaI3kuMqD9W1FJDs0jb2lR0N4L6mjIxw8w69fw9LjJA/0",
+            "creater_openid": "om3AQ0YaRp3RZtFuZ1Wgk0OdQjvA",
+            "name": "沃柑新上市 尝鲜正当时 美女来直播",
+            "close_replay": 0,
+            "share_img": "http://mmbiz.qpic.cn/mmbiz_jpg/EtdfuZTLxu7icGKBgc8oDZ1AcIdNXWeGe5hIzvx6C7QaOlCTASbpvmM3rBnmQyhcsdLrwibgaAJnxP1M5QIVI36g/0",
+            "cover_img": "http://mmbiz.qpic.cn/mmbiz_jpg/EtdfuZTLxu7icGKBgc8oDZ1AcIdNXWeGeT1mmvlXFlJIGiab8SPaVQiabMnHBVibfVplAsgBpUJQC8RUcjibEBYTbYA/0",
+            "close_goods": 0,
+            "live_status": 103
+        },
+        {
+            "close_comment": 0,
+            "close_kf": 1,
+            "is_feeds_public": 0,
+            "anchor_name": "主播昵称",
+            "close_like": 0,
+            "live_type": 0,
+            "roomid": 13,
+            "feeds_img": "http://mmbiz.qpic.cn/mmbiz_png/EtdfuZTLxu7kU8wW1ibBHBko7sSemBMfNBXtiag00JhDRYsy3X7bJpDiahNiaoPdernMQjCoGgaIrXr1A9TKFYK5pA/0",
+            "creater_openid": "om3AQ0YaRp3RZtFuZ1Wgk0OdQjvA",
+            "name": "测试直播",
+            "close_replay": 1,
+            "share_img": "http://mmbiz.qpic.cn/mmbiz_png/EtdfuZTLxu7kU8wW1ibBHBko7sSemBMfNHSs8jJIjJHX7cnOFm7FdMcuVyhundGbyYHgUjukgS9DHralabmnLYg/0",
+            "cover_img": "http://mmbiz.qpic.cn/mmbiz_jpg/EtdfuZTLxu7kU8wW1ibBHBko7sSemBMfNc9ohbThxf9n8ib6d1zE3lMUyu9YuQ9o7zuCia1F3vjT3FCgkJRZ0cE9A/0",
+            "close_goods": 0,
+            "live_status": 107
+        },
+        {
+            "close_comment": 0,
+            "close_kf": 1,
+            "is_feeds_public": 1,
+            "anchor_name": "丫丫",
+            "close_like": 0,
+            "live_type": 0,
+            "roomid": 12,
+            "feeds_img": "",
+            "creater_openid": "om3AQ0UZPWgqCUNcFWuYw3Wtq-tk",
+            "name": "7月半全民购直播",
+            "close_replay": 0,
+            "share_img": "http://mmbiz.qpic.cn/mmbiz_jpg/EtdfuZTLxu5vjHvWm3LZicLbRiaCjnCHILBFXqtFoLLicf4StoI0110L8dufJbjCzhJe8YqBTVT9PbfLzbE12B9bw/0",
+            "cover_img": "http://mmbiz.qpic.cn/mmbiz_jpg/EtdfuZTLxu5vjHvWm3LZicLbRiaCjnCHILBgOfkPSn5BoIpDAllebCND3E3gp5KQHSvSyPZMRnwWo1LV62Ysnaqg/0",
+            "close_goods": 0,
+            "live_status": 107
+        }
+    ],
+    "msg": "success"
+}

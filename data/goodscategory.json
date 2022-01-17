@@ -1,0 +1,126 @@
+{
+    "code": 0,
+    "data": [
+        {
+            "icon": "https://cdn.it120.cc/apifactory/2019/04/09/f89753a227d26a3fe9ccc6f975857bb6.png",
+            "isUse": true,
+            "key": "1",
+            "level": 1,
+            "name": "上装",
+            "paixu": 0,
+            "pid": 0,
+            "shopId": 0,
+            "type": "index",
+            "userId": 951
+        },
+        {
+            "icon": "https://cdn.it120.cc/apifactory/2019/04/09/5bfffd6ad0d4483870f024a3ed936528.png",
+            "isUse": true,
+            "key": "2",
+            "level": 1,
+            "name": "裤装",
+            "paixu": 0,
+            "pid": 0,
+            "shopId": 0,
+            "type": "",
+            "userId": 951
+        },
+        {
+            "icon": "https://cdn.it120.cc/apifactory/2019/04/09/8d32c254e2cb86d2d42c99b768d136b6.png",
+            "isUse": true,
+            "key": "4",
+            "level": 1,
+            "name": "特价区",
+            "paixu": 0,
+            "pid": 0,
+            "shopId": 0,
+            "type": "",
+            "userId": 951
+        },
+        {
+            "icon": "https://cdn.it120.cc/apifactory/2019/04/09/d800327091f216e2c83db8af7b6be306.png",
+            "isUse": true,
+            "key": "5",
+            "level": 1,
+            "name": "裙装",
+            "paixu": 0,
+            "pid": 0,
+            "shopId": 0,
+            "type": "",
+            "userId": 951
+        },
+        {
+            "icon": "https://cdn.it120.cc/apifactory/2019/04/09/cfee29650d6ae58a4bb1f84a3d899450.png",
+            "isUse": true,
+            "key": "6",
+            "level": 1,
+            "name": "套装",
+            "paixu": 0,
+            "pid": 0,
+            "shopId": 0,
+            "type": "",
+            "userId": 951
+        },
+        {
+            "icon": "https://cdn.it120.cc/apifactory/2019/04/09/6b3136cda73c99453ac93a1c5a9deebf.png",
+            "isUse": true,
+            "key": "7",
+            "level": 1,
+            "name": "外套",
+            "paixu": 0,
+            "pid": 0,
+            "shopId": 0,
+            "type": "",
+            "userId": 951
+        },
+        {
+            "icon": "https://cdn.it120.cc/apifactory/2019/04/09/9a7356187fce687ce568ba7381685299.png",
+            "isUse": true,
+            "key": "8",
+            "level": 1,
+            "name": "秒杀",
+            "paixu": 0,
+            "pid": 0,
+            "shopId": 0,
+            "type": "",
+            "userId": 951
+        },
+        {
+            "icon": "https://cdn.it120.cc/apifactory/2019/04/09/7773b4c204280ba194514594f7070ac9.png",
+            "isUse": true,
+            "key": "9",
+            "level": 1,
+            "name": "内裤",
+            "paixu": 0,
+            "pid": 0,
+            "shopId": 0,
+            "type": "",
+            "userId": 951
+        },
+        {
+            "icon": "https://cdn.it120.cc/apifactory/2019/04/09/60f41bf042d201b48a7115d22344320f.png",
+            "isUse": true,
+            "key": "10",
+            "level": 1,
+            "name": "袜子",
+            "paixu": 0,
+            "pid": 0,
+            "shopId": 0,
+            "type": "",
+            "userId": 951
+        },
+        {
+            "icon": "https://cdn.it120.cc/apifactory/2019/04/09/cdb16ac9c66bc211b82bd947452526f4.png",
+            "isUse": true,
+            "key": "11",
+            "level": 1,
+            "name": "鞋",
+            "paixu": 0,
+            "pid": 0,
+            "shopId": 0,
+            "type": "",
+            "userId": 951
+        }
+    ],
+    "msg": "success"
+}

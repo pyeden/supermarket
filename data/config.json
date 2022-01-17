@@ -1,0 +1,136 @@
+{
+    "code": 0,
+    "data": [
+        {
+            "key": "wxpay_api_url",
+            "remark": "小程序支付接口URL地址",
+            "value": "/pay/wx/wxapp"
+        },
+        {
+            "key": "order_pay_user_balance",
+            "remark": "订单支付允许使用余额",
+            "value": "1"
+        },
+        {
+            "key": "orderPeriod_open",
+            "remark": "是否开启订阅模式",
+            "value": "0"
+        },
+        {
+            "key": "share_pic",
+            "remark": "转发分享的图片",
+            "value": "https://dcdn.it120.cc/2021/06/25/b9ece465-efd1-472e-b42a-add48199941f.jpeg"
+        },
+        {
+            "key": "fx_subscribe_ids",
+            "remark": "申请加入分销商的订阅消息模版ID",
+            "value": "7sO58VXh0T5a6SwB5c9hR43bnBPxW8E6v3d70QQXuIk"
+        },
+        {
+            "key": "show_score_sign",
+            "remark": "是否显示签到送积分模块",
+            "value": "1"
+        },
+        {
+            "key": "show_score_exchange_growth",
+            "remark": "是否显示积分兑换成长值入口",
+            "value": "1"
+        },
+        {
+            "key": "show_quan_exchange_score",
+            "remark": "是否显示积分券兑换积分入口",
+            "value": "1"
+        },
+        {
+            "key": "show_3_seller",
+            "remark": "是否显示三级分销入口",
+            "value": "1"
+        },
+        {
+            "key": "goods_search_show_type",
+            "remark": "搜索页面商品展现方式，1 为一行1个商品；2为一行2个商品",
+            "value": "1"
+        },
+        {
+            "key": "show_buy_dynamic",
+            "remark": "是否显示首页的购买动态",
+            "value": "1"
+        },
+        {
+            "key": "show_seller_number",
+            "remark": "商品是否显示销量",
+            "value": "1"
+        },
+        {
+            "key": "recycle_open",
+            "remark": "是否开启回收功能",
+            "value": "1"
+        },
+        {
+            "key": "cps_open",
+            "remark": "开启cps功能",
+            "value": "1"
+        },
+        {
+            "key": "shopping_cart_vop_open",
+            "remark": "是否开启云货架购物车",
+            "value": "0"
+        },
+        {
+            "key": "shipping_address_region_level",
+            "remark": "收货地址省市区县需要几级，只支持3和4",
+            "value": "3"
+        },
+        {
+            "key": "shipping_address_gps",
+            "remark": "添加收货地址是否需要选择定位",
+            "value": "0"
+        },
+        {
+            "key": "balance_pay_pwd",
+            "remark": "余额消费需要交易密码",
+            "value": "0"
+        },
+        {
+            "key": "adminUserIds",
+            "remark": "管理员绑定的用户编号，多个编号用英文逗号分割",
+            "value": "1351478"
+        },
+        {
+            "key": "needIdCheck",
+            "remark": "是否需要进行用户实名认证后才可以下单",
+            "value": "0"
+        },
+        {
+            "key": "shopMod",
+            "remark": "0为单店铺版本 ； 1为多店铺版本",
+            "value": "0"
+        },
+        {
+            "key": "goodsDetailSkuShowType",
+            "remark": "0 为点击立即购买按钮后出现规格尺寸、数量的选择； 1为直接在商品详情页面显示规格尺寸、数量的选择，而不弹框",
+            "value": "0"
+        },
+        {
+            "key": "share_profile",
+            "remark": "转发小程序时候的话术",
+            "value": "百款精品商品，总有一款适合您"
+        },
+        {
+            "key": "subscribe_ids",
+            "remark": "订阅号模板ID，多个用英文的逗号分隔",
+            "value": "ITVuuD_cwYN-5BjXne8cSktDo43xetj0u-lpvFZEQQs,dw9Tzh9r0sw7Gjab0ovQJx3bP3gdXmF_FZvpnxPd6hc"
+        },
+        {
+            "key": "order_hx_uids",
+            "remark": "核销管理员",
+            "value": "1262609"
+        },
+        {
+            "key": "mallName",
+            "remark": "小程序名称",
+            "value": "天使童装"
+        }
+    ],
+    "msg": "success"
+}
