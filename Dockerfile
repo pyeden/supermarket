@@ -4,18 +4,12 @@
 # 选择基础镜像
 FROM python:3.8.12-slim-buster
 
-# 选用国内镜像源以提高下载速度
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tencent.com/g' /etc/apk/repositories \
-&& apk add --update --no-cache python3 py3-pip \
-&& rm -rf /var/cache/apk/*
-
 # 拷贝当前项目到/app目录下
 COPY . /app
 
 # 设定当前的工作目录
 WORKDIR /app
 
-# 安装依赖到指定的/install文件夹
 # 选用国内镜像源以提高下载速度
 RUN pip config set global.index-url http://mirrors.cloud.tencent.com/pypi/simple \
 && pip config set global.trusted-host mirrors.cloud.tencent.com \
