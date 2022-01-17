@@ -1,0 +1,5 @@
+[global]
+index-url = http://pypiproxy.curisinsight.com:3141/root/pypi/+simple/
+extra-index-url=http://pypiproxy.curisinsight.com:13141/root/public/+simple/
+    https://mirrors.aliyun.com/pypi/simple/
+trusted-host = pypiproxy.curisinsight.com
