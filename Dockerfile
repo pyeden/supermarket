@@ -11,7 +11,8 @@ COPY . /app
 # 设定当前的工作目录
 WORKDIR /app
 
-RUN pip install --user -r requirements.txt
+RUN /usr/local/bin/python -m pip install --upgrade pip\
+    &&pip install --user -r requirements.txt
 
 # 设定对外端口
 EXPOSE 8088
