@@ -1,6 +1,10 @@
 from django.apps import AppConfig
 
 
-class AppConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
+VERBOSE_APP_NAME = '商品管理'
+
+
+class ShopConfig(AppConfig):
     name = 'app'
+    verbose_name = VERBOSE_APP_NAME
+    main_menu_index = 3

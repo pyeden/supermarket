@@ -35,7 +35,11 @@ class TimeStampField(models.DateTimeField):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return value
-        return datetime.datetime.fromtimestamp(value)
+        try:
+            return datetime.datetime.fromtimestamp(value)
+        except TypeError as e:
+            print('eeeeeeee', e)
+            return datetime.datetime.fromtimestamp(int(value))
 
     def to_python(self, value):
         if value is None or isinstance(value, float) or value == 0:
@@ -108,6 +112,15 @@ IS_CHOICE = (
         (1, '是')
     )
 
+RECOMMEND = (
+        (0, '普通'),
+        (1, '推荐')
+    )
+
+PRODUCTION_STATUS = (
+        (0, '下架'),
+        (1, '上架')
+    )
 
 BOOL_CHOICE = (
     (True, '真'),
@@ -151,15 +164,48 @@ class BaseModel(models.Model):
         super().delete(using, keep_parents)
 
     def __str__(self):
-        return f"{self._meta.app_label}_{self.id}"
+        # if hasattr(self, 'name'):
+        #     from django.apps import apps
+        #     obj = apps.get_model(self._meta.app_label, self._meta.model_name)
+        #     for field in obj._meta.fields:
+        #         if field.name == self.name:
+        #             return f"{field.verbose_name}_{self.name}"
+        if hasattr(self, 'name'):
+            return f"{self.name}"
+        return f"{self.id}"
+
+
+class GoodsCategory(BaseModel):
+    """商品分类"""
+
+    icon = models.CharField("图标", max_length=255, null=True, blank=True, default='0')
+    key = models.CharField('标号', max_length=255, null=True, blank=True, default='0')
+    name = models.CharField('名称', max_length=255, null=True, blank=True, default='0')
+    type = models.CharField('类别', max_length=255, null=True, blank=True, default='0')
+    level = models.IntegerField(null=True, blank=True, default=0)
+    paixu = models.IntegerField(null=True, blank=True, default=0)
+    pid = models.IntegerField(null=True, blank=True, default=0)
+    shopId = models.IntegerField(null=True, blank=True, default=0)
+    userId = models.IntegerField(null=True, blank=True, default=0)
+    isUse = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=True)
+
+    class Meta:
+        verbose_name = '商品分类'
+        verbose_name_plural = '商品分类'
 
 
 class Goods(BaseModel):
     """商品"""
 
+    categoryId = models.ForeignKey(GoodsCategory, verbose_name='商品分类', on_delete=models.CASCADE, to_field="id", related_name='category_goods')
+    number = models.IntegerField('库存', null=True, blank=True, default=0)
+    dayDue = models.IntegerField('保质期（单位/月）', null=True, blank=True, default=0)
+    dateProduction = TimeStampField('生产日期', null=True, blank=True, default=0)
+    dateEndCountDown = TimeStampField('倒计时', null=True, blank=True, default=0)
+    dateEndPingtuan = TimeStampField('拼团时间', null=True, blank=True, default=0)
+    dateEnd = TimeStampField('结束时间', null=True, blank=True, default=0)
     afterSale = models.CharField(max_length=255, null=True, blank=True, default='0')
-    categoryId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    characteristic = models.CharField(max_length=255, null=True, blank=True, default='0')
+    characteristic = models.CharField('商品描述', max_length=255, null=True, blank=True, default='0')
     commission = models.FloatField(null=True, blank=True, default=0.0)
     commissionSettleType = models.IntegerField(null=True, blank=True, default=0)
     commissionType = models.IntegerField(null=True, blank=True, default=0)
@@ -178,27 +224,27 @@ class Goods(BaseModel):
     maxCoupons = models.IntegerField(null=True, blank=True, default=0)
     miaosha = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
     minBuyNumber = models.IntegerField(null=True, blank=True, default=0)
-    minPrice = models.FloatField(null=True, blank=True, default=0)
+    minPrice = models.FloatField('最低价', null=True, blank=True, default=0)
     minScore = models.IntegerField(null=True, blank=True, default=0)
-    name = models.CharField(max_length=255, null=True, blank=True, default='0')
+    name = models.CharField('商品名称', max_length=255, null=True, blank=True, default='0')
     numberFav = models.IntegerField(null=True, blank=True, default=0)
     numberGoodReputation = models.IntegerField(null=True, blank=True, default=0)
     numberOrders = models.IntegerField(null=True, blank=True, default=0)
     numberReputation = models.IntegerField(null=True, blank=True, default=0)
     numberSells = models.IntegerField(null=True, blank=True, default=0)
-    originalPrice = models.FloatField(null=True, blank=True, default=0)
+    originalPrice = models.FloatField('原价', null=True, blank=True, default=0)
     overseas = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
     paixu = models.IntegerField(null=True, blank=True, default=0)
-    pic = models.CharField(max_length=255, null=True, blank=True, default='0')
+    pic = models.CharField('图片地址', max_length=255, null=True, blank=True, default='0')
     pingtuan = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
     pingtuanPrice = models.FloatField(null=True, blank=True, default=0)
-    recommendStatus = models.IntegerField(null=True, blank=True, default=0)
+    recommendStatus = models.IntegerField('是否推荐商品', null=True, blank=True, choices=RECOMMEND, default=0)
     recommendStatusStr = models.CharField(max_length=255, null=True, blank=True, default='0')
     seckillBuyNumber = models.IntegerField(null=True, blank=True, default=0)
     sellEnd = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
     sellStart = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=True)
     shopId = models.IntegerField(null=True, blank=True, default=0)
-    status = models.IntegerField(null=True, blank=True, default=0)
+    status = models.IntegerField('商品状态', null=True, blank=True, choices=PRODUCTION_STATUS, default=1)
     statusStr = models.CharField(max_length=255, null=True, blank=True, default='0')
     storeAlert = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
     stores = models.IntegerField(null=True, blank=True, default=0)
@@ -212,52 +258,30 @@ class Goods(BaseModel):
     weight = models.FloatField(null=True, blank=True, default=0)
 
     class Meta:
-        verbose_name = '商品'
+        verbose_name = '商品列表'
+        verbose_name_plural = '商品列表'
 
+    # 控制显示长度
+    def short_pic(self):
+        if len(str(self.pic)) > 30:
+            return '{}...'.format(str(self.pic)[0:29])
+        else:
+            return str(self.pic)
 
-class DiscountsCoupons(BaseModel):
-    """折扣/优惠卷"""
-
-    batchSendUid = models.IntegerField(null=True, blank=True, default=0)
-    dateEndDays = models.IntegerField(null=True, blank=True, default=0)
-    dateEndType = models.IntegerField(null=True, blank=True, default=0)
-    dateStartType = models.IntegerField(null=True, blank=True, default=0)
-    moneyHreshold = models.FloatField(null=True, blank=True, default=0)
-    moneyMax = models.FloatField(null=True, blank=True, default=0)
-    moneyMin = models.FloatField(null=True, blank=True, default=0)
-    moneyType = models.IntegerField(null=True, blank=True, default=0)
-    name = models.CharField(max_length=255, null=True, blank=True, default='0')
-    needAmount = models.FloatField(null=True, blank=True, default=0)
-    needScore = models.IntegerField(null=True, blank=True, default=0)
-    needSignedContinuous = models.IntegerField(null=True, blank=True, default=0)
-    numberGit = models.IntegerField(null=True, blank=True, default=0)
-    numberGitNumber = models.IntegerField(null=True, blank=True, default=0)
-    numberLeft = models.IntegerField(null=True, blank=True, default=0)
-    numberPersonMax = models.IntegerField(null=True, blank=True, default=0)
-    numberTotle = models.IntegerField(null=True, blank=True, default=0)
-    numberUsed = models.IntegerField(null=True, blank=True, default=0)
-    sendBirthday = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
-    sendInviteM = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
-    sendInviteS = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
-    sendRegister = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
-    showInFront = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=True)
-    status = models.IntegerField(null=True, blank=True, default=0)
-    statusStr = models.CharField(max_length=255, null=True, blank=True, default='0')
-    type = models.CharField(max_length=255, null=True, blank=True, default='0')
-
-    class Meta:
-        verbose_name = '折扣优惠'
+    short_pic.allow_tags = True
+    short_pic.short_description = '商品图片地址'
 
 
 class Config(BaseModel):
     """配置信息"""
 
-    key = models.CharField("配置", max_length=255, null=True, blank=True, default='0')
+    key = models.CharField("key", max_length=255, null=True, blank=True, default='0')
     remark = models.CharField("备注", max_length=255, null=True, blank=True, default='0')
-    value = models.CharField("参数", max_length=255, null=True, blank=True, default='0')
+    value = models.CharField("value", max_length=255, null=True, blank=True, default='0')
 
     class Meta:
-        verbose_name = '配置'
+        verbose_name = '小程序配置'
+        verbose_name_plural = '小程序配置'
 
 
 class Banner(BaseModel):
@@ -275,65 +299,36 @@ class Banner(BaseModel):
 
     class Meta:
         verbose_name = '轮播图'
-
-
-class GoodsCategory(BaseModel):
-    """商品分类"""
-
-    icon = models.CharField("图标", max_length=255, null=True, blank=True, default='0')
-    key = models.CharField(max_length=255, null=True, blank=True, default='0')
-    name = models.CharField(max_length=255, null=True, blank=True, default='0')
-    type = models.CharField(max_length=255, null=True, blank=True, default='0')
-    level = models.IntegerField(null=True, blank=True, default=0)
-    paixu = models.IntegerField(null=True, blank=True, default=0)
-    pid = models.IntegerField(null=True, blank=True, default=0)
-    shopId = models.IntegerField(null=True, blank=True, default=0)
-    userId = models.IntegerField(null=True, blank=True, default=0)
-    isUse = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=True)
-
-    class Meta:
-        verbose_name = '商品分类'
+        verbose_name_plural = '轮播图'
 
 
 class Notice(BaseModel):
+    """公告"""
 
-    isShow = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=True)
-    title = models.CharField(max_length=255, null=True, blank=True, default='0')
+    isShow = models.BooleanField('是否在首页显示', null=True, blank=True, choices=BOOL_CHOICE, default=True)
+    title = models.TextField('标题', max_length=2048, null=True, blank=True, default='0')
     userId = models.IntegerField(null=True, blank=True, default=0)
 
-
-class LiveRooms(BaseModel):
-
-    close_comment = models.IntegerField(null=True, blank=True, default=0)
-    close_kf = models.IntegerField(null=True, blank=True, default=0)
-    is_feeds_public = models.IntegerField(null=True, blank=True, default=0)
-    anchor_name = models.CharField(max_length=255, null=True, blank=True, default='0')
-    close_like = models.IntegerField(null=True, blank=True, default=0)
-    live_type = models.IntegerField(null=True, blank=True, default=0)
-    roomid = models.IntegerField(null=True, blank=True, default=0)
-    feeds_img = models.CharField(max_length=255, null=True, blank=True, default='0')
-    creater_openid = models.CharField(max_length=255, null=True, blank=True, default='0')
-    name = models.CharField(max_length=255, null=True, blank=True, default='0')
-    close_replay = models.IntegerField(null=True, blank=True, default=0)
-    share_img = models.CharField(max_length=255, null=True, blank=True, default='0')
-    cover_img = models.CharField(max_length=255, null=True, blank=True, default='0')
-    close_goods = models.IntegerField(null=True, blank=True, default=0)
-    live_status = models.IntegerField(null=True, blank=True, default=0)
+    class Meta:
+        verbose_name = '网站公告'
+        verbose_name_plural = '网站公告'
 
 
 class HomeAdvertising(BaseModel):
     """首页弹出广告"""
 
     name = models.CharField(max_length=255, null=True, blank=True, default='0')
+    key = models.CharField(max_length=255, null=True, blank=True, default='0')
     type = models.CharField(max_length=255, null=True, blank=True, default='0')
     val = models.CharField(max_length=255, null=True, blank=True, default='0')
 
     class Meta:
-        verbose_name = '首页弹出广告'
+        verbose_name = '弹窗广告'
+        verbose_name_plural = '弹窗广告'
 
 
 class SiteGoodsDynamic(BaseModel):
-    """网站商品动态"""
+    """商品购买动态"""
 
     nick = models.CharField(max_length=255, null=True, blank=True, default='0')
     uid = models.IntegerField(null=True, blank=True, default=0)
@@ -344,22 +339,8 @@ class SiteGoodsDynamic(BaseModel):
     goodsName = models.CharField(max_length=255, null=True, blank=True, default='0')
 
     class Meta:
-        verbose_name = '网站商品动态'
-
-
-class KanJiaSet(BaseModel):
-
-    goodsId = models.IntegerField(null=True, blank=True, default=0)
-    helpPriceMax = models.FloatField(null=True, blank=True, default=0)
-    helpPriceMin = models.FloatField(null=True, blank=True, default=0)
-    helpTimes = models.IntegerField(null=True, blank=True, default=0)
-    minPrice = models.FloatField(null=True, blank=True, default=0)
-    number = models.IntegerField(null=True, blank=True, default=0)
-    numberBuy = models.IntegerField(null=True, blank=True, default=0)
-    originalPrice = models.FloatField(null=True, blank=True, default=0)
-    reduction = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
-    status = models.IntegerField(null=True, blank=True, default=0)
-    statusStr = models.CharField(max_length=255, null=True, blank=True, default='0')
+        verbose_name = '购买动态'
+        verbose_name_plural = '购买动态'
 
 
 class UserProfile(BaseModel):
@@ -393,26 +374,8 @@ class UserProfile(BaseModel):
     taskUserLevelUpgrade = models.BooleanField(null=True, blank=True, choices=BOOL_CHOICE, default=False)
 
     class Meta:
-        verbose_name = '用户详细信息'
-
-
-class MoneyInfo(BaseModel):
-    """钱包信息"""
-
-    balance = models.IntegerField(null=True, blank=True, default=0)
-    freeze = models.IntegerField(null=True, blank=True, default=0)
-    fxCommisionPaying = models.IntegerField(null=True, blank=True, default=0)
-    growth = models.IntegerField(null=True, blank=True, default=0)
-    score = models.IntegerField(null=True, blank=True, default=0)
-    scoreLastRound = models.IntegerField(null=True, blank=True, default=0)
-    totalPayAmount = models.IntegerField(null=True, blank=True, default=0)
-    totalPayNumber = models.IntegerField(null=True, blank=True, default=0)
-    totalScore = models.IntegerField(null=True, blank=True, default=0)
-    totalWithdraw = models.IntegerField(null=True, blank=True, default=0)
-    totleConsumed = models.IntegerField(null=True, blank=True, default=0)
-
-    class Meta:
-        verbose_name = '钱包'
+        verbose_name = '用户信息'
+        verbose_name_plural = '用户信息'
 
 
 class Order(BaseModel):
@@ -427,3 +390,28 @@ class Order(BaseModel):
 
     class Meta:
         verbose_name = '订单信息'
+        verbose_name_plural = '订单信息'
+
+
+class SessionInfo(BaseModel):
+    """微信信息记录"""
+
+    code = models.CharField(max_length=255, null=True, blank=True, default='0')
+    openid = models.CharField(max_length=255, null=True, blank=True, default='0')
+    session_key = models.CharField(max_length=255, null=True, blank=True, default='0')
+    key = models.CharField(max_length=255, null=True, blank=True, default='0')
+
+    class Meta:
+        verbose_name = '微信授权记录'
+        verbose_name_plural = '微信授权记录'
+
+
+class ShopCart(BaseModel):
+    """购物车"""
+
+    name = models.CharField(max_length=255, null=True, blank=True, default='0')
+    number = models.IntegerField('数量', null=True, blank=True, default='0')
+
+    class Meta:
+        verbose_name = '购物车'
+        verbose_name_plural = '购物车'

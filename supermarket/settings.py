@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
+APPEND_SLASH = False
 # Application definition
 
 INSTALLED_APPS = [
@@ -139,5 +139,20 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
     'PAGE_SIZE_QUERY_PARAM': 'page',
-    'MAX_PAGE_SIZE': 1000
+    'MAX_PAGE_SIZE': 1000,
+
+    'EXCEPTION_HANDLER': (
+        'utils.exception_utils.custom_exception_handler'
+    ),
+
+    # 'DEFAULT_RENDERER_CLASSES': (
+    #     'utils.renderer_utils.CustomRenderer',
+    #     'rest_framework.renderers.BrowsableAPIRenderer',
+    # ),
+
 }
+
+# 微信接口信息配置
+WX_APP_ID = 'wxad795e910e81f909'
+WX_APP_SECRET = '5d088e8922b29c52690007999a74a752'
+WX_APP_URL = 'https://api.weixin.qq.com/sns/jscode2session'
