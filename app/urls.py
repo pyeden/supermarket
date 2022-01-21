@@ -33,7 +33,9 @@ urlpatterns = [
     path('site/adPosition/info', views.SiteAdPositionInfo.as_view(), name='position_info'),
     path('site/goods/dynamic', views.SiteGoodsDynamic.as_view(), name='goods_dynamic'),
 
-    path('shopping-cart/info', views.ShopCart.as_view(), name='goods_dynamic'),
+    path('shopping-cart/info', views.ShopCart.as_view(), name='car_goods'),
+    path('shopping-cart/modifyNumber', views.ShopCartGoodsUpdate.as_view(), name='car_goods_modify'),
+    path('shopping-cart/remove', views.ShopCartGoodsRemove.as_view(), name='car_goods_remove'),
 
 ]
 
