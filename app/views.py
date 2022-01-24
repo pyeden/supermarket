@@ -692,7 +692,7 @@ class OrderCreate(APIView):
         params = request.data
         conditions = {
             'userId': wx_utils.get_openid(params.get('token')),
-            'calculate': params.get('calculate', True),
+            'calculate': True if params.get('calculate') in ('false', 'true') else False,
             'cardId': params.get('cardId'),
             'cityId': params.get('cityId'),
             'couponId': params.get('couponId'),
