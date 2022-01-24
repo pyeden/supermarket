@@ -383,13 +383,17 @@ class Order(BaseModel):
     """
 
     calculate = models.BooleanField(null=True, blank=True, default=1)
+    address = models.CharField(max_length=255, null=True, blank=True, default='0')
     cardId = models.CharField(max_length=255, null=True, blank=True, default='0')
     cityId = models.CharField(max_length=255, null=True, blank=True, default='0')
     couponId = models.CharField(max_length=255, null=True, blank=True, default='0')
     deductionScore = models.CharField(max_length=255, null=True, blank=True, default='0')
     districtId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    goodsJsonStr = models.JSONField(null=True, blank=True, default=dict)
+    extJsonStr = models.JSONField(null=True, blank=True, default=dict)
+    goodsJsonStr = models.JSONField(null=True, blank=True, default=list)
     goodsType = models.CharField(max_length=255, null=True, blank=True, default='0')
+    linkMan = models.CharField(max_length=255, null=True, blank=True, default='0')
+    mobile = models.CharField(max_length=255, null=True, blank=True, default='0')
     peisongType = models.CharField(max_length=255, null=True, blank=True, default='0')
     provinceId = models.CharField(max_length=255, null=True, blank=True, default='0')
     remark = models.CharField(max_length=255, null=True, blank=True, default='0')

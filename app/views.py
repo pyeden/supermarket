@@ -690,8 +690,27 @@ class OrderCreate(APIView):
 
     def post(self, request):
         params = request.data
-        open_id = wx_utils.get_openid(params.get('token'))
-        key = params.get('key')
+        conditions = {
+            'userId': wx_utils.get_openid(params.get('token')),
+            'calculate': params.get('calculate', True),
+            'cardId': params.get('cardId'),
+            'cityId': params.get('cityId'),
+            'couponId': params.get('couponId'),
+            'deductionScore': params.get('deductionScore'),
+            'districtId': params.get('districtId'),
+            'goodsJsonStr': params.get('goodsJsonStr', []),
+            'goodsType': params.get('goodsType'),
+            'peisongType': params.get('peisongType'),
+            'provinceId': params.get('provinceId'),
+            'remark': params.get('remark'),
+            'address': params.get('address'),
+            'extJsonStr': params.get('extJsonStr', {}),
+            'linkMan': params.get('linkMan'),
+            'mobile': params.get('mobile'),
+        }
+
+        mo.Order.objects.create(**conditions)
+
         json_data = {
             "code": 0,
             "data": {},
