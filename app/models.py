@@ -100,8 +100,8 @@ class BaseManager(models.Manager):
         """
         过滤已经软删除的数据
         """
-        # return super(BaseManager, self).get_queryset().filter(is_delete=1)
-        return super(BaseManager, self).get_queryset()
+        return super(BaseManager, self).get_queryset().filter(is_delete=0)
+        # return super(BaseManager, self).get_queryset()
 
     def get(self, *args, **kwargs):
         return super().get(*args, **kwargs)
@@ -379,8 +379,20 @@ class UserProfile(BaseModel):
 
 
 class Order(BaseModel):
-    """订单"""
+    """订单
+    """
 
+    calculate = models.BooleanField(null=True, blank=True, default=1)
+    cardId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    cityId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    couponId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    deductionScore = models.CharField(max_length=255, null=True, blank=True, default='0')
+    districtId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    goodsJsonStr = models.JSONField(null=True, blank=True, default=dict)
+    goodsType = models.CharField(max_length=255, null=True, blank=True, default='0')
+    peisongType = models.CharField(max_length=255, null=True, blank=True, default='0')
+    provinceId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    remark = models.CharField(max_length=255, null=True, blank=True, default='0')
     pay_number = models.CharField(max_length=255, null=True, blank=True, default='0')
     userId = models.CharField(max_length=255, null=True, blank=True, default='0')
     is_pay = models.IntegerField(null=True, blank=True, default=0)
@@ -406,6 +418,15 @@ class SessionInfo(BaseModel):
         verbose_name_plural = '微信授权记录'
 
 
+class SecretKey(BaseModel):
+    """微信信息记录"""
+    key = models.CharField(max_length=255, null=True, blank=True, default='0')
+
+    class Meta:
+        verbose_name = '微信密钥'
+        verbose_name_plural = '微信密钥'
+
+
 class ShopCart(BaseModel):
     """购物车"""
 
@@ -413,7 +434,7 @@ class ShopCart(BaseModel):
     goodsId = models.IntegerField('商品ID', null=True, blank=True, default=0)
     number = models.IntegerField('商品数量', null=True, blank=True, default=1)
     selected = models.BooleanField('是否选中', null=True, blank=True, choices=IS_CHOICE, default=1)
-    goods = models.ForeignKey(Goods, verbose_name='商品', related_name='car_goods', on_delete=models.CASCADE, to_field="id")
+    user_id = models.CharField('用户ID', max_length=255, null=True, blank=True, default='o')
 
     class Meta:
         verbose_name = '购物车'

@@ -52,5 +52,14 @@ class WXFailed(APIException):
     微信相关错误
     """
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    message = _('Incorrect authentication credentials.')
-    message_code = 50001
+    default_detail = _('Incorrect authentication credentials.')
+    default_code = 50001
+
+
+class DbFailed(APIException):
+    """
+    数据库操作相关错误
+    """
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    default_detail = _('操作数据库错误.')
+    default_code = 50002

@@ -16,12 +16,6 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'name']
 
 
-class GoodsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = m.Goods
-        fields = '__all__'
-
-
 class BannersSerializer(serializers.ModelSerializer):
     class Meta:
         model = m.Banner
@@ -66,4 +60,36 @@ class ConfigSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = m.Config
+        fields = '__all__'
+
+
+class CarGoodsSerializer(serializers.ModelSerializer):
+    """序列化"""
+    goods = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_goods(car):
+        return GoodsSerializer(car.goods).data
+
+    class Meta:
+        model = m.ShopCart
+        fields = '__all__'
+
+
+class CarSerializer(serializers.ModelSerializer):
+    """序列化"""
+
+    class Meta:
+        model = m.ShopCart
+        fields = '__all__'
+
+
+class GoodsSerializer(serializers.ModelSerializer):
+    categoryId = serializers.SerializerMethodField()
+
+    def get_categoryId(self, obj):
+        return obj.category.id
+
+    class Meta:
+        model = m.Goods
         fields = '__all__'
