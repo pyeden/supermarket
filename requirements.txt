@@ -11,11 +11,15 @@ idna==3.3
 importlib-metadata==4.10.0
 install==1.3.5
 Markdown==3.3.6
+Naked==0.1.31
 pip==21.2.4
 pycparser==2.21
+pycryptodome==3.9.0
 pytz==2021.3
+PyYAML==6.0
 requests==2.27.1
 setuptools==58.0.4
+shellescape==3.8.1
 sqlparse==0.4.1
 typing-extensions==3.10.0.2
 urllib3==1.26.8

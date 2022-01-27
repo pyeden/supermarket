@@ -151,15 +151,15 @@ class ShopGoodsList(APIView):
     def post(self, request):
         params = request.data
         category_id = params.get('categoryId')
-        recommend_status = params.get('recommendStatus')
-        miao_sha = params.get('miaosha')
+        # recommend_status = params.get('recommendStatus')
+        # miao_sha = params.get('miaosha')
         query_set = mo.Goods.objects.all()
         if category_id:
             query_set = query_set.filter(category_id=category_id)
-        if recommend_status:
-            query_set = query_set.filter(recommendStatus=recommend_status)
-        if miao_sha:
-            query_set = query_set.filter(miaosha=miao_sha)
+        # if recommend_status:
+        #     query_set = query_set.filter(recommendStatus=recommend_status)
+        # if miao_sha:
+        #     query_set = query_set.filter(miaosha=miao_sha)
 
         pg = NoticeListPagination()
         page_data = pg.paginate_queryset(queryset=query_set, request=request, view=self)
@@ -826,41 +826,18 @@ class OrderCreate(APIView):
             json_data = {
                 "code": 0,
                 "data": {
-                    "amountTaxService": 0,
-                    "deductionMoney": 0,
+                    # "amountTaxService": 0,
+                    # "deductionMoney": 0,
                     "amountReal": total_prices,
-                    "couponUserList": [
-                        # {
-                        #     "canUseGoodsIds": [
-                        #         235853
-                        #     ],
-                        #     "dateAdd": "2021-12-02 18:46:44",
-                        #     "dateEnd": "2021-12-18 00:00:00",
-                        #     "dateStart": "2021-12-02 18:46:44",
-                        #     "goodsTotalAmount": 4995,
-                        #     "id": 427331,
-                        #     "money": 40,
-                        #     "moneyHreshold": 3000,
-                        #     "moneyType": 0,
-                        #     "name": "新店优惠",
-                        #     "pid": 223,
-                        #     "pwd": "",
-                        #     "status": 0,
-                        #     "statusStr": "正常",
-                        #     "type": "",
-                        #     "uid": 2017654,
-                        #     "userId": 951
-                        # }
-                    ],  # 可以使用优惠卷列表
-                    "isNeedLogistics": False,
-                    "amountTotle": 0,
-                    "overseas": False,
-                    "amountLogistics": 0,
-                    "score": 0,
-                    "couponAmount": 0,
+                    "isNeedLogistics": True,   # 选择配送方式
+                    # "amountTotle": 0,
+                    # "overseas": False,
+                    # "amountLogistics": 0,
+                    # "score": 0,
+                    # "couponAmount": 0,
                     "goodsNumber": goods_numbers,
-                    "amountTaxGst": 0,
-                    "amountTax": 0
+                    # "amountTaxGst": 0,
+                    # "amountTax": 0
                 },
                 "msg": "success"
             }
@@ -1188,10 +1165,15 @@ class BindMobile(APIView):
             'iv': 'b6rL5+MSnQaOdHtRohdMug==', 'pwd': ''
         }
         """
-        r = wx_utils.Wx3rdSession()
+        code = request.data.get('code')
+        res = wx_utils.get_wx_auth_session(code)
+        session_key = res.get('session_key')
+        pc = wx_utils.WXBizDataCrypt('wxad795e910e81f909', session_key)
+
+        s = pc.decrypt(request.data.get('encryptedData'), request.data.get('iv'))
         json_data = {
             "code": 0,
-            "data": {'linkPhone': '110'},
+            "data": s.get('phoneNumber'),
             "msg": "success"
         }
         return Response(json_data)
