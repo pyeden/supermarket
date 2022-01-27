@@ -5,7 +5,7 @@ FROM python:3.8-alpine3.15
 
 # 选用国内镜像源以提高下载速度
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tencent.com/g' /etc/apk/repositories \
-&& apk add --update --no-cache py3-pip \
+&& apk add --update --no-cache py3-pip gcc\
 && rm -rf /var/cache/apk/*
 
 # 拷贝当前项目到/app目录下
