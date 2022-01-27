@@ -101,3 +101,11 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = m.Order
         fields = '__all__'
+
+
+class ShopAddressSerializer(serializers.ModelSerializer):
+    """序列化"""
+
+    class Meta:
+        model = m.ShopAddress
+        fields = '__all__'

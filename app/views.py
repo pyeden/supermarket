@@ -1115,40 +1115,16 @@ class OrderDetail(APIView):
 
 
 class SubShopList(APIView):
+    """配置超市地址"""
 
     def post(self, request):
+
+        query_set = mo.ShopAddress.objects.all()
+        serializer = se.ShopAddressSerializer(query_set, many=True)
+
         json_data = {
             "code": 0,
-            "data": [
-                {
-                    "address": "成都市天府新区-天目中心-家鑫超市",
-                    "cityId": "330100000000",
-                    "cyTablePayMod": 1,
-                    "dateAdd": "2020-02-20 14:42:12",
-                    "dateUpdate": "2021-04-09 17:16:38",
-                    "districtId": "330106000000",
-                    "goodsNeedCheck": False,
-                    "id": 6041,
-                    "latitude": 30.29966,
-                    "linkMan": "雍正",
-                    "linkPhone": "057118182512",
-                    "longitude": 120.107697,
-                    "name": "成都市天府新区",
-                    "numberGoodReputation": 0,
-                    "numberOrder": 0,
-                    "openScan": True,
-                    "openWaimai": True,
-                    "openZiqu": True,
-                    "openingHours": "8:30AM ~ 10:30PM",
-                    "paixu": 0,
-                    "provinceId": "330000000000",
-                    "status": 1,
-                    "statusStr": "正常",
-                    "taxGst": 0,
-                    "taxService": 0,
-                    "userId": 951
-                }
-            ],
+            "data": serializer.data,
             "msg": "success"
         }
         return Response(json_data)

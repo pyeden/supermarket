@@ -400,6 +400,8 @@ class Order(BaseModel):
     pay_number = models.CharField(max_length=255, null=True, blank=True, default='0')
     userId = models.CharField(max_length=255, null=True, blank=True, default='0')
     status = models.IntegerField(null=True, blank=True, default=0)
+    shopId = models.IntegerField(null=True, blank=True, default=0)
+    shopName = models.CharField(max_length=255, null=True, blank=True, default='0')
 
     class Meta:
         verbose_name = '订单信息'
@@ -456,4 +458,12 @@ class Address(BaseModel):
     status = models.IntegerField(null=True, blank=True, default=0)
     statusStr = models.CharField(max_length=255, null=True, blank=True, default='0')
     uid = models.IntegerField(null=True, blank=True, default=0)
-    userId = models.CharField(max_length=225, null=True, blank=True, default=0)
+    userId = models.CharField(max_length=225, null=True, blank=True, default='0')
+
+
+class ShopAddress(BaseModel):
+
+    address = models.CharField('超市地址', max_length=225, null=True, blank=True, default='0')
+    name = models.CharField('超市名字', max_length=225, null=True, blank=True, default='0')
+    linkPhone = models.CharField('超市联系电话', max_length=225, null=True, blank=True, default='0')
+    goodsNeedCheck = models.BooleanField(null=True, blank=True, default=False,)
