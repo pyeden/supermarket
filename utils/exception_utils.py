@@ -1,8 +1,8 @@
-from importlib._common import _
-
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.views import exception_handler
+from django.utils.translation import gettext_lazy as _
+
 from utils.code_utils import CODE_NOT_FOUND_ERROR, MSG_NOT_FOUND_ERROR, MSG_UNKNOWN_ERROR, CODE_UNKNOWN_ERROR, \
     CODE_AUTH_ERROR, MSG_AUTH_ERROR, CODE_SERVER_ERROR, MSG_SERVER_ERROR, MSG_REJECT_ERROR, CODE_REJECT_ERROR, \
     CODE_METHOD_ERROR, MSG_METHOD_ERROR, MSG_PARAMETER_ERROR, CODE_PARAMETER_ERROR
