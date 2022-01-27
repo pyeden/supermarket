@@ -43,7 +43,7 @@ urlpatterns = [
     path('api/v1/user/detail', views.UserDetail.as_view(), name='user_detail'),
     path('api/v1/card/my', views.CardMy.as_view(), name='card_my'),
     path('api/v1/user/amount', views.UserAmount.as_view(), name='user_amount'),
-    path('api/v1/order/create', views.OrderCreate.as_view(), name='order_create'),
+
     path('api/v1/shop/subshop/list', views.SubShopList.as_view(), name='sub_shop_list'),
     path('api/v1/user/wxapp/bindMobile', views.BindMobile.as_view(), name='bind_mobile'),
     path('api/v1/user/shipping-address/list', views.ShopAddressList.as_view(), name='address_list'),
@@ -52,9 +52,16 @@ urlpatterns = [
     path('api/v1/user/shipping-address/update', views.ShopAddressUpdate.as_view(), name='address_update'),
 
     path('common/region/v2/province', views.Province.as_view(), name='province'),
+    path('common/region/v2/city', views.City.as_view(), name='city'),
+    path('common/region/v2/districts', views.Districts.as_view(), name='districts'),
+    path('common/region/v2/streets', views.Streets.as_view(), name='streets'),
     path('common/region/v2/child', views.ProvinceChild.as_view(), name='province_child'),
 
     path('api/v1/order/list', views.OrderList.as_view(), name='order_list'),
+    path('api/v1/order/create', views.OrderCreate.as_view(), name='order_create'),
+    path('api/v1/order/detail', views.OrderDetail.as_view(), name='order_detail'),
+
+    path('api/v1/pay/wx/wxapp', views.PayWxWxapp.as_view(), name='order_detail'),
 ]
 
 # router = routers.DefaultRouter()

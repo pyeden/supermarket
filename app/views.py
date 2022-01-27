@@ -1,5 +1,6 @@
 import json
 
+import requests
 from cryptography.fernet import Fernet
 from django.contrib.auth.models import User, Group
 from django.db import connections
@@ -309,7 +310,7 @@ class ShopCartGoodsUpdate(APIView):
 
 
 class ShopCartGoodsRemove(APIView):
-    """获取购物车信息"""
+    """删除购物车商品"""
 
     def post(self, request):
         params = request.data
@@ -317,7 +318,8 @@ class ShopCartGoodsRemove(APIView):
         keys = params.get('key')
         key_list = keys.split(',') if keys else []
         goods = mo.ShopCart.objects.filter(user_id=open_id).filter(key__in=key_list).first()
-        goods.delete()
+        if goods:
+            goods.delete()
         json_data = {
             "code": 0,
             "data": {},
@@ -441,33 +443,18 @@ class ShopAddressAdd(APIView):
 
     def post(self, request):
         params = request.data
-        open_id = wx_utils.get_openid(params.get('token'))
-        key = params.get('key')
+        user_id = wx_utils.get_openid(params.pop('token'))
+        params.update({
+            'userId': user_id
+        })
+
+        params = common_utils.parse_data(params)
+
+        mo.Address.objects.create(**params)
 
         json_data = {
             "code": 0,
-            "data": {
-                "extJson": {},
-                "info": {
-                    "address": "测试详细地址",
-                    "areaStr": "峰峰矿区",
-                    "cityId": "130400000000",
-                    "cityStr": "邯郸市",
-                    "dateAdd": "2021-10-24 21:52:32",
-                    "dateUpdate": "2022-01-01 10:16:12",
-                    "districtId": "130406000000",
-                    "id": 1,
-                    "isDefault": False,
-                    "linkMan": "测试",
-                    "mobile": "13500000000",
-                    "provinceId": "130000000000",
-                    "provinceStr": "河北省",
-                    "status": 0,
-                    "statusStr": "正常",
-                    "uid": 1351478,
-                    "userId": 951
-                }
-            },
+            "data": {},
             "msg": "success"
         }
         return Response(json_data)
@@ -517,23 +504,83 @@ class Province(APIView):
             "code": 0,
             "data": [
                 {
-                    "firstLetter": "b",
-                    "id": "110000000000",
-                    "jianpin": "bjs",
+                    "firstLetter": "s",
+                    "id": '1000',
+                    "jianpin": "sc",
                     "level": 1,
-                    "name": "北京市",
-                    "nameEn": "Beijing",
-                    "pinyin": "beijingshi"
+                    "name": "四川省",
+                    "nameEn": "SiChuan",
+                    "pinyin": "sichuansheng"
                 },
+            ],
+            "msg": "success"
+        }
+        return Response(json_data)
+
+
+class City(APIView):
+
+    def get(self, request):
+        params = request.query_params.dict()
+        json_data = {
+            "code": 0,
+            "data": [
                 {
-                    "firstLetter": "z",
-                    "id": "330000000000",
-                    "jianpin": "zjs",
-                    "level": 1,
-                    "name": "浙江省",
-                    "nameEn": "Zhejiang",
-                    "pinyin": "zhejiangsheng"
-                }
+                    "firstLetter": "c",
+                    "id": '2000',
+                    "jianpin": "sc",
+                    "level": 2,
+                    "name": "成都市",
+                    "nameEn": "ChengDu",
+                    "pid": "1000",
+                    "pinyin": "chengdushi"
+                },
+            ],
+            "msg": "success"
+        }
+        return Response(json_data)
+
+
+class Districts(APIView):
+
+    def get(self, request):
+        params = request.query_params.dict()
+        json_data = {
+            "code": 0,
+            "data": [
+                {
+                    "firstLetter": "t",
+                    "id": '3000',
+                    "jianpin": "tfxq",
+                    "level": 3,
+                    "name": "天府新区",
+                    "pid": "2000",
+                    "nameEn": "TianFuXinQu",
+                    "pinyin": "tianfuxinqu"
+                },
+            ],
+            "msg": "success"
+        }
+        return Response(json_data)
+
+
+class Streets(APIView):
+
+    def get(self, request):
+        params = request.query_params.dict()
+        json_data = {
+            "code": 0,
+            "data": [
+                {
+                    "firstLetter": "s",
+                    "id": '4000',
+                    "jianpin": "sc",
+                    "level": 4,
+                    "name": "天目中心",
+                    "pid": "3000",
+                    "nameEn": "TianMuZhongXin",
+                    "pinyin": "tianmuzhongxin"
+                },
             ],
             "msg": "success"
         }
@@ -544,30 +591,48 @@ class ProvinceChild(APIView):
 
     def get(self, request):
         params = request.query_params.dict()
-        json_data = {
-            "code": 0,
-            "data": [
+        pid = params.get('pid')
+        data = {
+            '1000': [
                 {
-                    "firstLetter": "h",
-                    "id": "330100000000",
-                    "jianpin": "hzs",
+                    "firstLetter": "c",
+                    "id": '2000',
+                    "jianpin": "cd",
                     "level": 2,
-                    "name": "杭州市",
-                    "nameEn": "Hangzhou",
-                    "pid": "330000000000",
+                    "name": "成都市",
+                    "nameEn": "ChengDu",
+                    "pid": '1000',
                     "pinyin": "hangzhoushi"
                 },
-                {
-                    "firstLetter": "n",
-                    "id": "330200000000",
-                    "jianpin": "nbs",
-                    "level": 2,
-                    "name": "宁波市",
-                    "nameEn": "Ningbo",
-                    "pid": "330000000000",
-                    "pinyin": "ningboshi"
-                }
             ],
+            '2000': [
+                {
+                    "firstLetter": "t",
+                    "id": '3000',
+                    "jianpin": "tfxq",
+                    "level": 3,
+                    "name": "天府新区",
+                    "pid": "2000",
+                    "nameEn": "TianFuXinQu",
+                    "pinyin": "tianfuxinqu"
+                },
+            ],
+            '3000': [
+                {
+                    "firstLetter": "s",
+                    "id": '4000',
+                    "jianpin": "sc",
+                    "level": 4,
+                    "name": "天目中心",
+                    "pid": "3000",
+                    "nameEn": "TianMuZhongXin",
+                    "pinyin": "tianmuzhongxin"
+                },
+            ],
+        }
+        json_data = {
+            "code": 0,
+            "data": data[pid],
             "msg": "success"
         }
         return Response(json_data)
@@ -690,32 +755,115 @@ class OrderCreate(APIView):
 
     def post(self, request):
         params = request.data
-        conditions = {
-            'userId': wx_utils.get_openid(params.get('token')),
-            'calculate': True if params.get('calculate') in ('false', 'true') else False,
-            'cardId': params.get('cardId'),
-            'cityId': params.get('cityId'),
-            'couponId': params.get('couponId'),
-            'deductionScore': params.get('deductionScore'),
-            'districtId': params.get('districtId'),
-            'goodsJsonStr': params.get('goodsJsonStr', []),
-            'goodsType': params.get('goodsType'),
-            'peisongType': params.get('peisongType'),
-            'provinceId': params.get('provinceId'),
-            'remark': params.get('remark'),
-            'address': params.get('address'),
-            'extJsonStr': params.get('extJsonStr', {}),
-            'linkMan': params.get('linkMan'),
-            'mobile': params.get('mobile'),
-        }
+        user_id = wx_utils.get_openid(params.pop('token'))
+        params = common_utils.parse_data(params)
 
-        mo.Order.objects.create(**conditions)
+        goods_infos = params.get('goodsJsonStr')
+        total_prices = 0
+        goods_numbers = 0
+        for goods in json.loads(goods_infos):
+            goods_number = goods.get('number', 0)
+            goods_price = goods.get('price', 0)
+            total_price = goods_price * goods_number
+            total_prices += total_price
+            goods_numbers += goods_number
 
-        json_data = {
-            "code": 0,
-            "data": {},
-            "msg": "success"
-        }
+        if not params.get('calculate'):
+            # 真实下单是没有calculate字段
+            params.update({
+                'userId': user_id,
+                'orderNumber': Fernet.generate_key().decode('utf-8')
+            })
+            mo.Order.objects.create(**params)
+            json_data = {
+                "code": 0,
+                "data": {
+                    "amount": 0,
+                    "amountCard": 0,
+                    "amountCoupons": 0,
+                    "amountLogistics": 0,
+                    "amountReal": total_prices,
+                    "amountRefundTotal": 0,
+                    "amountTax": 0,
+                    "amountTaxGst": 0,
+                    "amountTaxService": 0,
+                    "autoDeliverStatus": 0,
+                    "dateAdd": "2021-12-09 10:51:19",
+                    "dateClose": "2021-12-09 11:02:20",
+                    "differHours": 0,
+                    "goodsNumber": goods_numbers,
+                    "hasRefund": False,  # 是否退款
+                    "id": 1236848,  # 支付id，使用订单id
+                    "ip": "183.129.193.150",  # 用户ip地址
+                    "isCanHx": False,
+                    "isDelUser": False,
+                    "isEnd": False,
+                    "isHasBenefit": False,
+                    "isNeedLogistics": True,
+                    "isPay": False,
+                    "isScoreOrder": False,
+                    "isSuccessPingtuan": False,
+                    "jd8Status": 0,
+                    "orderNumber": "21120910519510010",  # 订单id
+                    "orderType": 0,
+                    "periodAutoPay": False,
+                    "pid": 0,
+                    "qudanhao": "0000",
+                    "refundStatus": 0,
+                    "remark": "",
+                    "score": 0,
+                    "scoreDeduction": 0,
+                    "shopId": 0,
+                    "status": 0,  # 待支付
+                    "statusStr": "待支付",
+                    "trips": 0,
+                    "type": 0
+                },
+                "msg": "success"
+            }
+        else:
+            # 预下单
+            json_data = {
+                "code": 0,
+                "data": {
+                    "amountTaxService": 0,
+                    "deductionMoney": 0,
+                    "amountReal": total_prices,
+                    "couponUserList": [
+                        # {
+                        #     "canUseGoodsIds": [
+                        #         235853
+                        #     ],
+                        #     "dateAdd": "2021-12-02 18:46:44",
+                        #     "dateEnd": "2021-12-18 00:00:00",
+                        #     "dateStart": "2021-12-02 18:46:44",
+                        #     "goodsTotalAmount": 4995,
+                        #     "id": 427331,
+                        #     "money": 40,
+                        #     "moneyHreshold": 3000,
+                        #     "moneyType": 0,
+                        #     "name": "新店优惠",
+                        #     "pid": 223,
+                        #     "pwd": "",
+                        #     "status": 0,
+                        #     "statusStr": "正常",
+                        #     "type": "",
+                        #     "uid": 2017654,
+                        #     "userId": 951
+                        # }
+                    ],  # 可以使用优惠卷列表
+                    "isNeedLogistics": False,
+                    "amountTotle": 0,
+                    "overseas": False,
+                    "amountLogistics": 0,
+                    "score": 0,
+                    "couponAmount": 0,
+                    "goodsNumber": goods_numbers,
+                    "amountTaxGst": 0,
+                    "amountTax": 0
+                },
+                "msg": "success"
+            }
         return Response(json_data)
 
 
@@ -723,12 +871,22 @@ class OrderList(APIView):
 
     def post(self, request):
         params = request.data
-        open_id = wx_utils.get_openid(params.get('token'))
-        key = params.get('key')
+        user_id = wx_utils.get_openid(params.get('token'))
+        status = params.get('key')
+        query_set = mo.Order.objects.filter(userId=user_id)
+        if status in (0, 1, 2, 3):
+            query_set = query_set.filter(status=status).all()
+        else:
+            query_set = query_set.all()
+
+        pg = NoticeListPagination()
+        page_data = pg.paginate_queryset(queryset=query_set, request=request, view=self)
+        data = se.OrderSerializer(page_data, many=True)
+
         json_data = {
             "code": 0,
             "data": {
-                "totalRow": 40,
+                "totalRow": pg.page.paginator.count,
                 "logisticsMap": {
                     "1238758": {
                         "address": "快递详细收货地址",
@@ -746,7 +904,7 @@ class OrderList(APIView):
                         "type": 0
                     }
                 },
-                "totalPage": 40,
+                "totalPage": pg.page.paginator.num_pages,
                 "orderList": [
                     {
                         "amount": 189,
@@ -786,7 +944,7 @@ class OrderList(APIView):
                         "score": 1,
                         "scoreDeduction": 0,
                         "shopId": 0,
-                        "status": -1,
+                        "status": 0,
                         "statusStr": "订单关闭",
                         "trips": 0,
                         "type": 0,
@@ -832,6 +990,147 @@ class OrderList(APIView):
                         }
                     ]
                 }
+            },
+            "msg": "success"
+        }
+        return Response(json_data)
+
+
+class OrderDetail(APIView):
+
+    def get(self, request):
+        params = request.query_params.dict()
+        user_id = wx_utils.get_openid(params.get('token'))
+        order_id = params.get('id')
+        json_data = {
+            "code": 0,
+            "data": {
+                "orderLogisticsShipperLogs": [],
+                "orderInfo": {
+                    "amount": 189,
+                    "amountCard": 0,
+                    "amountCoupons": 0,
+                    "amountLogistics": 0,
+                    "amountReal": 189,
+                    "amountRefundTotal": 0,
+                    "amountTax": 0,
+                    "amountTaxGst": 0,
+                    "amountTaxService": 0,
+                    "autoDeliverStatus": 0,
+                    "dateAdd": "2021-12-10 14:09:50",
+                    "dateClose": "2021-12-10 14:20:50",
+                    "dateUpdate": "2021-12-10 14:21:10",
+                    "differHours": 102,
+                    "goodsNumber": 1,
+                    "hasRefund": False,
+                    "id": 1238758,
+                    "ip": "1.2.3.4",
+                    "isCanHx": False,
+                    "isDelUser": False,
+                    "isEnd": False,
+                    "isHasBenefit": False,
+                    "isNeedLogistics": True,
+                    "isPay": False,
+                    "isScoreOrder": True,
+                    "isSuccessPingtuan": False,
+                    "jd8Status": 0,
+                    "orderNumber": "21121014099510005",
+                    "orderType": 0,
+                    "periodAutoPay": False,
+                    "pid": 0,
+                    "qudanhao": "0005",
+                    "refundStatus": 0,
+                    "remark": "",
+                    "score": 1,
+                    "scoreDeduction": 0,
+                    "shopId": 0,
+                    "status": -1,
+                    "statusStr": "订单关闭",
+                    "trips": 0,
+                    "type": 0,
+                    "uid": 1351478,
+                    "userId": 951
+                },
+                "goods": [
+                    {
+                        "afterSale": "0,1,2",
+                        "amount": 189,
+                        "amountCoupon": 0,
+                        "amountSingle": 189,
+                        "amountSingleBase": 189,
+                        "barCode": "a0000000001",
+                        "buyRewardEnd": False,
+                        "categoryId": 1872,
+                        "cyTableStatus": 0,
+                        "dateAdd": "2021-12-10 14:09:50",
+                        "fxType": 2,
+                        "goodsId": 4232,
+                        "goodsName": "兔毛马甲",
+                        "goodsSubName": "bieming",
+                        "id": 1956214,
+                        "isProcessHis": True,
+                        "isScoreOrder": True,
+                        "number": 1,
+                        "numberNoFahuo": 1,
+                        "orderId": 1238758,
+                        "pic": "https://cdn.it120.cc/apifactory/2019/06/25/76d3c433-96ea-4f41-b149-31ea0983cd8f.jpg",
+                        "propertyChildIds": "",
+                        "purchase": False,
+                        "refundStatus": 0,
+                        "saleDateEnd": "2021-12-21 09:58:28",
+                        "score": 1,
+                        "shopId": 0,
+                        "status": -1,
+                        "type": 0,
+                        "uid": 1351478,
+                        "unit": "份",
+                        "userId": 951
+                    }
+                ],
+                "logistics": {
+                    "address": "收货地址详细地址",
+                    "areaStr": "西湖区",
+                    "cityId": "330100000000",
+                    "cityStr": "杭州市",
+                    "code": "undefined",
+                    "dateUpdate": "2021-12-10 14:09:50",
+                    "districtId": "330106000000",
+                    "id": 1238758,
+                    "linkMan": "章三",
+                    "mobile": "13500000000",
+                    "provinceId": "330000000000",
+                    "provinceStr": "浙江省",
+                    "status": -1,
+                    "streetId": "330106109000",
+                    "type": 0,
+                    "userId": 951
+                },
+                "extJson": {},
+                "orderLogisticsShippers": [],
+                "user": {
+                    "nick": "gooking（api工厂创始人）",
+                    "avatarUrl": "https://dcdn.it120.cc/cuser/951/2021/07/15/309311d6-52a3-46a4-931c-6458aff42f58.jpg"
+                },
+                "logs": [
+                    {
+                        "dateAdd": "2021-12-10 14:09:50",
+                        "id": 4228786,
+                        "orderId": 1238758,
+                        "type": 0,
+                        "typeStr": "下单",
+                        "uid": 1351478,
+                        "userId": 951
+                    },
+                    {
+                        "dateAdd": "2021-12-10 14:21:10",
+                        "id": 4228900,
+                        "orderId": 1238758,
+                        "type": -1,
+                        "typeStr": "关闭订单",
+                        "uid": 1351478,
+                        "userId": 951
+                    }
+                ]
             },
             "msg": "success"
         }
@@ -893,6 +1192,34 @@ class BindMobile(APIView):
         json_data = {
             "code": 0,
             "data": {'linkPhone': '110'},
+            "msg": "success"
+        }
+        return Response(json_data)
+
+
+class PayWxWxapp(APIView):
+
+    def post(self, request):
+        params = common_utils.parse_data(request.data)
+        user_id = wx_utils.get_openid(params.pop('token'))
+        params.update({
+            'openid': user_id
+        })
+
+        res = requests.post('https://api.mch.weixin.qq.com/pay/unifiedorder', data=params)
+        json_data = {
+            "code": 0,
+            "data": {
+                "timeStamp": "1639301968360",
+                "outTradeId": "ZF2112122009197309",
+                "package": "prepay_id=wx121739282777950d4a4f7f0af016300000",
+                "paySign": "E3BD35F75CC02825F269D78B7BD6526E",
+                "appid": "wxa46b09d413fbcaff",
+                "sign": "E3BD35F75CC02825F269D78B7BD6526E",
+                "signType": "MD5",
+                "prepayId": "wx121739282777950d4a4f7f0af016300000",
+                "nonceStr": "DJe3ZmjvsJPBiVLgLY18OUjbUZ7lTk"
+            },
             "msg": "success"
         }
         return Response(json_data)

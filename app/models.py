@@ -382,7 +382,7 @@ class Order(BaseModel):
     """订单
     """
 
-    calculate = models.BooleanField(null=True, blank=True, default=1)
+    orderNumber = models.CharField(max_length=255, null=True, blank=True, default='0')
     address = models.CharField(max_length=255, null=True, blank=True, default='0')
     cardId = models.CharField(max_length=255, null=True, blank=True, default='0')
     cityId = models.CharField(max_length=255, null=True, blank=True, default='0')
@@ -399,10 +399,7 @@ class Order(BaseModel):
     remark = models.CharField(max_length=255, null=True, blank=True, default='0')
     pay_number = models.CharField(max_length=255, null=True, blank=True, default='0')
     userId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    is_pay = models.IntegerField(null=True, blank=True, default=0)
-    is_delivery = models.IntegerField(null=True, blank=True, default=0)
-    is_close = models.IntegerField(null=True, blank=True, default=0)
-    is_comment = models.IntegerField(null=True, blank=True, default=0)
+    status = models.IntegerField(null=True, blank=True, default=0)
 
     class Meta:
         verbose_name = '订单信息'
@@ -438,8 +435,25 @@ class ShopCart(BaseModel):
     goodsId = models.IntegerField('商品ID', null=True, blank=True, default=0)
     number = models.IntegerField('商品数量', null=True, blank=True, default=1)
     selected = models.BooleanField('是否选中', null=True, blank=True, choices=IS_CHOICE, default=1)
-    user_id = models.CharField('用户ID', max_length=255, null=True, blank=True, default='o')
+    user_id = models.CharField('用户ID', max_length=255, null=True, blank=True, default='0')
 
     class Meta:
         verbose_name = '购物车'
         verbose_name_plural = '购物车'
+
+
+class Address(BaseModel):
+    address = models.CharField(max_length=255, null=True, blank=True, default='0')
+    areaStr = models.CharField(max_length=255, null=True, blank=True, default='0')
+    cityId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    cityStr = models.CharField(max_length=255, null=True, blank=True, default='0')
+    districtId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    isDefault = models.BooleanField(null=True, blank=True, default=False)
+    linkMan = models.CharField(max_length=255, null=True, blank=True, default='0')
+    mobile = models.CharField(max_length=255, null=True, blank=True, default='0')
+    provinceId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    provinceStr = models.CharField(max_length=255, null=True, blank=True, default='0')
+    status = models.IntegerField(null=True, blank=True, default=0)
+    statusStr = models.CharField(max_length=255, null=True, blank=True, default='0')
+    uid = models.IntegerField(null=True, blank=True, default=0)
+    userId = models.CharField(max_length=225, null=True, blank=True, default=0)

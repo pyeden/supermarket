@@ -19,3 +19,16 @@ def dict_fetchall(cursor):
         dict(zip(columns, row))
         for row in cursor.fetchall()
     ]
+
+
+def parse_data(params: dict):
+    d = {}
+    for k, v in params.items():
+        if v == 'true':
+            v = True
+        if v == 'false':
+            v = False
+        # 去除空值
+        if v:
+            d[k] = v
+    return d

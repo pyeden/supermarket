@@ -93,3 +93,11 @@ class GoodsSerializer(serializers.ModelSerializer):
     class Meta:
         model = m.Goods
         fields = '__all__'
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    """序列化"""
+
+    class Meta:
+        model = m.Order
+        fields = '__all__'
