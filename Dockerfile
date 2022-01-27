@@ -1,12 +1,12 @@
 # 写在最前面：强烈建议先阅读官方教程[Dockerfile最佳实践]（https://docs.docker.com/develop/develop-images/dockerfile_best-practices/）
 # 选择构建用基础镜像（选择原则：在包含所有用到的依赖前提下尽可能提及小）。如需更换，请到[dockerhub官方仓库](https://hub.docker.com/_/python?tab=tags)自行选择后替换。
 # 选择基础镜像
-FROM python:3.8-alpine3.15
+FROM python:3.8
 
 # 选用国内镜像源以提高下载速度
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tencent.com/g' /etc/apk/repositories \
-&& apk add --update --no-cache py3-pip gcc g++ xcode-select \
-&& rm -rf /var/cache/apk/*
+#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tencent.com/g' /etc/apk/repositories \
+#&& apk add --update --no-cache py3-pip gcc g++\
+#&& rm -rf /var/cache/apk/*
 
 # 拷贝当前项目到/app目录下
 COPY . /app
