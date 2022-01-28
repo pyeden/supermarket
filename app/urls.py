@@ -60,6 +60,7 @@ urlpatterns = [
     path('api/v1/order/list', views.OrderList.as_view(), name='order_list'),
     path('api/v1/order/create', views.OrderCreate.as_view(), name='order_create'),
     path('api/v1/order/detail', views.OrderDetail.as_view(), name='order_detail'),
+    path('api/v1/order/statistics', views.OrderStatistic.as_view(), name='order_statistic'),
 
     path('api/v1/pay/wx/wxapp', views.PayWxWxapp.as_view(), name='order_detail'),
 ]

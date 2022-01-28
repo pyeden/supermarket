@@ -1,4 +1,6 @@
 import json
+import re
+import time
 
 import requests
 from cryptography.fernet import Fernet
@@ -14,7 +16,7 @@ from app import models as mo
 from app import common
 from app.paginations import NoticeListPagination
 from app import serializers as se
-from utils import wx_utils, exception_utils, common_utils
+from utils import wx_utils, exception_utils, common_utils, time_utils
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -772,7 +774,7 @@ class OrderCreate(APIView):
             # 真实下单是没有calculate字段
             params.update({
                 'userId': user_id,
-                'orderNumber': Fernet.generate_key().decode('utf-8')
+                'orderNumber': str(int(time.time()*1000))
             })
             mo.Order.objects.create(**params)
             json_data = {
@@ -858,256 +860,72 @@ class OrderList(APIView):
 
         pg = NoticeListPagination()
         page_data = pg.paginate_queryset(queryset=query_set, request=request, view=self)
-        data = se.OrderSerializer(page_data, many=True)
+        serializer = se.OrderSerializer(page_data, many=True)
 
+        goods_map = {}
+        order_list = []
+        for order in serializer.data:
+            goods_list = json.loads(order.get('goodsJsonStr'))
+            total_price = 0
+            total_num = 0
+            nuw_goods = {}
+            for goods in goods_list:
+                total_num += goods['number']
+                total_price += goods['price']
+            goods_map[order.get('id')] = goods_list
+            nuw_goods.update(order)
+            nuw_goods['goodsNumber'] = total_num
+            nuw_goods['amountReal'] = total_price
+            order_list.append(nuw_goods)
         json_data = {
             "code": 0,
             "data": {
                 "totalRow": pg.page.paginator.count,
-                "logisticsMap": {
-                    "1238758": {
-                        "address": "快递详细收货地址",
-                        "areaStr": "西湖区",
-                        "cityId": "330100000000",
-                        "cityStr": "杭州市",
-                        "districtId": "330106000000",
-                        "id": 1238758,
-                        "linkMan": "张三",
-                        "mobile": "13500000000",
-                        "provinceId": "330000000000",
-                        "provinceStr": "浙江省",
-                        "status": -1,
-                        "streetId": "330106109000",
-                        "type": 0
-                    }
-                },
+                "logisticsMap": goods_map,
                 "totalPage": pg.page.paginator.num_pages,
-                "orderList": [
-                    {
-                        "amount": 189,
-                        "amountCard": 0,
-                        "amountCoupons": 0,
-                        "amountLogistics": 0,
-                        "amountReal": 189,
-                        "amountRefundTotal": 0,
-                        "amountTax": 0,
-                        "amountTaxGst": 0,
-                        "amountTaxService": 0,
-                        "autoDeliverStatus": 0,
-                        "dateAdd": "2021-12-10 14:09:50",
-                        "dateClose": "2021-12-10 14:20:50",
-                        "dateUpdate": "2021-12-10 14:21:10",
-                        "differHours": 101,
-                        "goodsNumber": 1,
-                        "hasRefund": False,
-                        "id": 1238758,
-                        "ip": "1.2.3.4",
-                        "isCanHx": False,
-                        "isDelUser": False,
-                        "isEnd": False,
-                        "isHasBenefit": False,
-                        "isNeedLogistics": True,
-                        "isPay": False,
-                        "isScoreOrder": True,
-                        "isSuccessPingtuan": False,
-                        "jd8Status": 0,
-                        "orderNumber": "21121014099510005",
-                        "orderType": 0,
-                        "periodAutoPay": False,
-                        "pid": 0,
-                        "qudanhao": "0005",
-                        "refundStatus": 0,
-                        "remark": "",
-                        "score": 1,
-                        "scoreDeduction": 0,
-                        "shopId": 0,
-                        "status": 0,
-                        "statusStr": "订单关闭",
-                        "trips": 0,
-                        "type": 0,
-                        "uid": 1351478,
-                        "userId": 951
-                    }
-                ],
-                "goodsMap": {
-                    "1238758": [
-                        {
-                            "afterSale": "0,1,2",
-                            "amount": 189,
-                            "amountCoupon": 0,
-                            "amountSingle": 189,
-                            "amountSingleBase": 189,
-                            "barCode": "a0000000001",
-                            "buyRewardEnd": False,
-                            "categoryId": 1872,
-                            "cyTableStatus": 0,
-                            "dateAdd": "2021-12-10 14:09:50",
-                            "fxType": 2,
-                            "goodsId": 4232,
-                            "goodsName": "兔毛马甲",
-                            "goodsSubName": "bieming",
-                            "id": 1956214,
-                            "isProcessHis": True,
-                            "isScoreOrder": True,
-                            "number": 1,
-                            "numberNoFahuo": 1,
-                            "orderId": 1238758,
-                            "pic": "https://cdn.it120.cc/apifactory/2019/06/25/76d3c433-96ea-4f41-b149-31ea0983cd8f.jpg",
-                            "propertyChildIds": "",
-                            "purchase": False,
-                            "refundStatus": 0,
-                            "saleDateEnd": "2021-12-21 09:58:28",
-                            "score": 1,
-                            "shopId": 0,
-                            "status": -1,
-                            "type": 0,
-                            "uid": 1351478,
-                            "unit": "份",
-                            "userId": 951
-                        }
-                    ]
-                }
+                "orderList": order_list,
+                "goodsMap": goods_map
             },
             "msg": "success"
         }
         return Response(json_data)
 
 
-class OrderDetail(APIView):
+class OrderStatistic(APIView):
+    """统计订单信息"""
 
     def get(self, request):
         params = request.query_params.dict()
-        user_id = wx_utils.get_openid(params.get('token'))
+        user_id = wx_utils.get_openid(params.pop('token'))
         order_id = params.get('id')
+
+        return Response({
+            "code": 0,
+            "data": {},
+            'msg': 'success'
+        })
+
+
+class OrderDetail(APIView):
+    """订单详情"""
+
+    def get(self, request):
+        params = request.query_params.dict()
+        user_id = wx_utils.get_openid(params.pop('token'))
+        order_id = params.get('id')
+
+        query_set = mo.Order.objects.filter(userId=user_id).filter(id=order_id).first()
+        seriallizer = se.OrderSerializer(query_set)
+
+        order = seriallizer.data
+        goods_list = json.loads(order.get('goodsJsonStr'))
+
         json_data = {
             "code": 0,
             "data": {
-                "orderLogisticsShipperLogs": [],
-                "orderInfo": {
-                    "amount": 189,
-                    "amountCard": 0,
-                    "amountCoupons": 0,
-                    "amountLogistics": 0,
-                    "amountReal": 189,
-                    "amountRefundTotal": 0,
-                    "amountTax": 0,
-                    "amountTaxGst": 0,
-                    "amountTaxService": 0,
-                    "autoDeliverStatus": 0,
-                    "dateAdd": "2021-12-10 14:09:50",
-                    "dateClose": "2021-12-10 14:20:50",
-                    "dateUpdate": "2021-12-10 14:21:10",
-                    "differHours": 102,
-                    "goodsNumber": 1,
-                    "hasRefund": False,
-                    "id": 1238758,
-                    "ip": "1.2.3.4",
-                    "isCanHx": False,
-                    "isDelUser": False,
-                    "isEnd": False,
-                    "isHasBenefit": False,
-                    "isNeedLogistics": True,
-                    "isPay": False,
-                    "isScoreOrder": True,
-                    "isSuccessPingtuan": False,
-                    "jd8Status": 0,
-                    "orderNumber": "21121014099510005",
-                    "orderType": 0,
-                    "periodAutoPay": False,
-                    "pid": 0,
-                    "qudanhao": "0005",
-                    "refundStatus": 0,
-                    "remark": "",
-                    "score": 1,
-                    "scoreDeduction": 0,
-                    "shopId": 0,
-                    "status": -1,
-                    "statusStr": "订单关闭",
-                    "trips": 0,
-                    "type": 0,
-                    "uid": 1351478,
-                    "userId": 951
-                },
-                "goods": [
-                    {
-                        "afterSale": "0,1,2",
-                        "amount": 189,
-                        "amountCoupon": 0,
-                        "amountSingle": 189,
-                        "amountSingleBase": 189,
-                        "barCode": "a0000000001",
-                        "buyRewardEnd": False,
-                        "categoryId": 1872,
-                        "cyTableStatus": 0,
-                        "dateAdd": "2021-12-10 14:09:50",
-                        "fxType": 2,
-                        "goodsId": 4232,
-                        "goodsName": "兔毛马甲",
-                        "goodsSubName": "bieming",
-                        "id": 1956214,
-                        "isProcessHis": True,
-                        "isScoreOrder": True,
-                        "number": 1,
-                        "numberNoFahuo": 1,
-                        "orderId": 1238758,
-                        "pic": "https://cdn.it120.cc/apifactory/2019/06/25/76d3c433-96ea-4f41-b149-31ea0983cd8f.jpg",
-                        "propertyChildIds": "",
-                        "purchase": False,
-                        "refundStatus": 0,
-                        "saleDateEnd": "2021-12-21 09:58:28",
-                        "score": 1,
-                        "shopId": 0,
-                        "status": -1,
-                        "type": 0,
-                        "uid": 1351478,
-                        "unit": "份",
-                        "userId": 951
-                    }
-                ],
-                "logistics": {
-                    "address": "收货地址详细地址",
-                    "areaStr": "西湖区",
-                    "cityId": "330100000000",
-                    "cityStr": "杭州市",
-                    "code": "undefined",
-                    "dateUpdate": "2021-12-10 14:09:50",
-                    "districtId": "330106000000",
-                    "id": 1238758,
-                    "linkMan": "章三",
-                    "mobile": "13500000000",
-                    "provinceId": "330000000000",
-                    "provinceStr": "浙江省",
-                    "status": -1,
-                    "streetId": "330106109000",
-                    "type": 0,
-                    "userId": 951
-                },
-                "extJson": {},
-                "orderLogisticsShippers": [],
-                "user": {
-                    "nick": "gooking（api工厂创始人）",
-                    "avatarUrl": "https://dcdn.it120.cc/cuser/951/2021/07/15/309311d6-52a3-46a4-931c-6458aff42f58.jpg"
-                },
-                "logs": [
-                    {
-                        "dateAdd": "2021-12-10 14:09:50",
-                        "id": 4228786,
-                        "orderId": 1238758,
-                        "type": 0,
-                        "typeStr": "下单",
-                        "uid": 1351478,
-                        "userId": 951
-                    },
-                    {
-                        "dateAdd": "2021-12-10 14:21:10",
-                        "id": 4228900,
-                        "orderId": 1238758,
-                        "type": -1,
-                        "typeStr": "关闭订单",
-                        "uid": 1351478,
-                        "userId": 951
-                    }
-                ]
+                "orderInfo": order,
+                "goods": goods_list,
+                "logistics": order,
             },
             "msg": "success"
         }

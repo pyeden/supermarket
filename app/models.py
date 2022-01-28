@@ -33,13 +33,13 @@ class TimeStampField(models.DateTimeField):
         return self.to_python(value)
 
     def from_db_value(self, value, expression, connection):
+        """把数据库的时间戳转换成字符串格式"""
         if value is None:
             return value
         try:
-            return datetime.datetime.fromtimestamp(value)
+            return datetime.datetime.fromtimestamp(value).strftime("%Y-%m-%d %H:%M:%S")
         except TypeError as e:
-            print('eeeeeeee', e)
-            return datetime.datetime.fromtimestamp(int(value))
+            return datetime.datetime.fromtimestamp(int(value)).strftime("%Y-%m-%d %H:%M:%S")
 
     def to_python(self, value):
         if value is None or isinstance(value, float) or value == 0:
@@ -384,22 +384,20 @@ class Order(BaseModel):
 
     orderNumber = models.CharField(max_length=255, null=True, blank=True, default='0')
     address = models.CharField(max_length=255, null=True, blank=True, default='0')
-    cardId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    prices = models.CharField('订单总价', max_length=255, null=True, blank=True, default='0')
     cityId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    couponId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    numbers = models.CharField('订单商品总数', max_length=255, null=True, blank=True, default='0')
     deductionScore = models.CharField(max_length=255, null=True, blank=True, default='0')
     districtId = models.CharField(max_length=255, null=True, blank=True, default='0')
     extJsonStr = models.JSONField(null=True, blank=True, default=dict)
     goodsJsonStr = models.JSONField(null=True, blank=True, default=list)
     goodsType = models.CharField(max_length=255, null=True, blank=True, default='0')
-    linkMan = models.CharField(max_length=255, null=True, blank=True, default='0')
-    mobile = models.CharField(max_length=255, null=True, blank=True, default='0')
+    linkMan = models.CharField('联系人', max_length=255, null=True, blank=True, default='0')
+    mobile = models.CharField('手机号', max_length=255, null=True, blank=True, default='0')
     peisongType = models.CharField(max_length=255, null=True, blank=True, default='0')
     provinceId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    remark = models.CharField(max_length=255, null=True, blank=True, default='0')
-    pay_number = models.CharField(max_length=255, null=True, blank=True, default='0')
+    remark = models.CharField('备注', max_length=255, null=True, blank=True, default='0')
     userId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    status = models.IntegerField(null=True, blank=True, default=0)
     shopId = models.IntegerField(null=True, blank=True, default=0)
     shopName = models.CharField(max_length=255, null=True, blank=True, default='0')
 
