@@ -37,9 +37,9 @@ class TimeStampField(models.DateTimeField):
         if value is None:
             return value
         try:
-            return datetime.datetime.fromtimestamp(value).strftime("%Y-%m-%d %H:%M:%S")
+            return datetime.datetime.fromtimestamp(value)
         except TypeError as e:
-            return datetime.datetime.fromtimestamp(int(value)).strftime("%Y-%m-%d %H:%M:%S")
+            return datetime.datetime.fromtimestamp(int(value))
 
     def to_python(self, value):
         if value is None or isinstance(value, float) or value == 0:
@@ -381,25 +381,29 @@ class UserProfile(BaseModel):
 class Order(BaseModel):
     """订单
     """
+    PEI_SONG_CHOICE = (
+        ('kd', "需要配送"),
+        ('zq', "上门自取")
+    )
+    SHOP_NAME = (
+        (1, "嘉鑫超市"),
+        (2, "百货超市")
+    )
 
-    orderNumber = models.CharField(max_length=255, null=True, blank=True, default='0')
-    address = models.CharField(max_length=255, null=True, blank=True, default='0')
-    prices = models.CharField('订单总价', max_length=255, null=True, blank=True, default='0')
-    cityId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    numbers = models.CharField('订单商品总数', max_length=255, null=True, blank=True, default='0')
-    deductionScore = models.CharField(max_length=255, null=True, blank=True, default='0')
-    districtId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    extJsonStr = models.JSONField(null=True, blank=True, default=dict)
+    orderNumber = models.CharField('订单编号', max_length=255, null=True, blank=True, default='0')
+    freight = models.FloatField('运费', null=True, blank=True, default=0)
+    amountReal = models.FloatField('订单总价', null=True, blank=True, default=0)
+    payPrices = models.FloatField('应付价格', null=True, blank=True, default=0)
+    goodsNumber = models.IntegerField('订单商品总数', null=True, blank=True, default=0)
     goodsJsonStr = models.JSONField(null=True, blank=True, default=list)
-    goodsType = models.CharField(max_length=255, null=True, blank=True, default='0')
-    linkMan = models.CharField('联系人', max_length=255, null=True, blank=True, default='0')
+    linkMan = models.CharField('买家昵称', max_length=255, null=True, blank=True, default='0')
     mobile = models.CharField('手机号', max_length=255, null=True, blank=True, default='0')
-    peisongType = models.CharField(max_length=255, null=True, blank=True, default='0')
-    provinceId = models.CharField(max_length=255, null=True, blank=True, default='0')
+    address = models.CharField('买家地址', max_length=255, null=True, blank=True, default='0')
+    peisongType = models.CharField('取货方式', choices=PEI_SONG_CHOICE, max_length=255, null=True, blank=True, default='zq')
     remark = models.CharField('备注', max_length=255, null=True, blank=True, default='0')
     userId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    shopId = models.IntegerField(null=True, blank=True, default=0)
-    shopName = models.CharField(max_length=255, null=True, blank=True, default='0')
+    goodsType = models.IntegerField(null=True, blank=True, default=0)
+    shopId = models.IntegerField('取货超市', choices=SHOP_NAME, null=True, blank=True, default=1)
 
     class Meta:
         verbose_name = '订单信息'
@@ -444,18 +448,9 @@ class ShopCart(BaseModel):
 
 class Address(BaseModel):
     address = models.CharField(max_length=255, null=True, blank=True, default='0')
-    areaStr = models.CharField(max_length=255, null=True, blank=True, default='0')
-    cityId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    cityStr = models.CharField(max_length=255, null=True, blank=True, default='0')
-    districtId = models.CharField(max_length=255, null=True, blank=True, default='0')
     isDefault = models.BooleanField(null=True, blank=True, default=False)
     linkMan = models.CharField(max_length=255, null=True, blank=True, default='0')
     mobile = models.CharField(max_length=255, null=True, blank=True, default='0')
-    provinceId = models.CharField(max_length=255, null=True, blank=True, default='0')
-    provinceStr = models.CharField(max_length=255, null=True, blank=True, default='0')
-    status = models.IntegerField(null=True, blank=True, default=0)
-    statusStr = models.CharField(max_length=255, null=True, blank=True, default='0')
-    uid = models.IntegerField(null=True, blank=True, default=0)
     userId = models.CharField(max_length=225, null=True, blank=True, default='0')
 
 
@@ -465,3 +460,7 @@ class ShopAddress(BaseModel):
     name = models.CharField('超市名字', max_length=225, null=True, blank=True, default='0')
     linkPhone = models.CharField('超市联系电话', max_length=225, null=True, blank=True, default='0')
     goodsNeedCheck = models.BooleanField(null=True, blank=True, default=False,)
+
+    class Meta:
+        verbose_name = '超市配置'
+        verbose_name_plural = '超市配置'

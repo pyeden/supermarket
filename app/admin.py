@@ -1,3 +1,4 @@
+import json
 from collections import OrderedDict
 
 # Register your models here.
@@ -162,6 +163,66 @@ class ConfigAdmin(BaseAdmin):
         'key',
         'value',
         'remark',
+    ]
+    search_fields = []
+    readonly_fields = ()
+
+
+@admin.register(Order)
+class OrderAdmin(BaseAdmin):
+    # 列表中显示的字段（表头）
+    list_display = [
+        'orderNumber',
+        'payPrices',
+        'goodsNumber',
+        'order_goods_detail',
+        'linkMan',
+        'mobile',
+        'address',
+        'peisongType',
+        'remark',
+        'userId',
+    ]
+    ordering = ('id',)
+    list_display_links = [
+        'orderNumber',
+        'payPrices',
+        'goodsNumber',
+        'order_goods_detail',
+        'linkMan',
+        'mobile',
+        'address',
+        'peisongType',
+        'remark',
+        'userId',
+    ]
+    search_fields = []
+    readonly_fields = ()
+
+    def order_goods_detail(self, obj):
+        goods_list = json.loads(obj.goodsJsonStr)
+
+        detail_str = ''
+        for goods in goods_list:
+            detail_str += f"{goods['name']} - {goods['number']} \n"
+        return detail_str
+
+    order_goods_detail.short_description = format_html('<a style="Color:#049EFF;" >{}</a>', '订单商品详情')
+
+
+@admin.register(ShopAddress)
+class ShopAddressAdmin(BaseAdmin):
+    # 列表中显示的字段（表头）
+    list_display = [
+        'address',
+        'name',
+        'linkPhone',
+    ]
+    ordering = ('id',)
+    list_display_links = [
+        'address',
+        'name',
+        'linkPhone',
     ]
     search_fields = []
     readonly_fields = ()

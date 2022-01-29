@@ -39,13 +39,14 @@ urlpatterns = [
     path('api/v1/shopping-cart/modifyNumber', views.ShopCartGoodsUpdate.as_view(), name='car_goods_modify'),
     path('api/v1/shopping-cart/remove', views.ShopCartGoodsRemove.as_view(), name='car_goods_remove'),
 
-    path('api/v1/user/shipping-address/default/v2', views.DefaultShopAddress.as_view(), name='address_default'),
     path('api/v1/user/detail', views.UserDetail.as_view(), name='user_detail'),
     path('api/v1/card/my', views.CardMy.as_view(), name='card_my'),
     path('api/v1/user/amount', views.UserAmount.as_view(), name='user_amount'),
 
     path('api/v1/shop/subshop/list', views.SubShopList.as_view(), name='sub_shop_list'),
     path('api/v1/user/wxapp/bindMobile', views.BindMobile.as_view(), name='bind_mobile'),
+
+    path('api/v1/user/shipping-address/default/v2', views.DefaultShopAddress.as_view(), name='address_default'),
     path('api/v1/user/shipping-address/list', views.ShopAddressList.as_view(), name='address_list'),
     path('api/v1/user/shipping-address/detail/v2', views.ShopAddressDetail.as_view(), name='address_detail'),
     path('api/v1/user/shipping-address/add', views.ShopAddressAdd.as_view(), name='address_add'),

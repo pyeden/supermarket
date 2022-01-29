@@ -334,32 +334,15 @@ class DefaultShopAddress(APIView):
 
     def get(self, request):
         params = request.query_params.dict()
-        open_id = wx_utils.get_openid(params.get('token'))
-        key = params.get('key')
+        open_id = wx_utils.get_openid(params.pop('token'))
+        query_set = mo.Address.objects.filter(userId=open_id).filter(isDefault=True).first()
+        serializer = se.AddressSerializer(query_set)
 
         json_data = {
             "code": 0,
             "data": {
                 "extJson": {},
-                "info": {
-                    "address": "测试详细地址",
-                    "areaStr": "峰峰矿区",
-                    "cityId": "130400000000",
-                    "cityStr": "邯郸市",
-                    "dateAdd": "2021-10-24 21:52:32",
-                    "dateUpdate": "2022-01-01 10:16:12",
-                    "districtId": "130406000000",
-                    "id": 265498,
-                    "isDefault": False,
-                    "linkMan": "测试",
-                    "mobile": "13500000000",
-                    "provinceId": "130000000000",
-                    "provinceStr": "河北省",
-                    "status": 0,
-                    "statusStr": "正常",
-                    "uid": 1351478,
-                    "userId": 951
-                }
+                "info": serializer.data
             },
             "msg": "success"
         }
@@ -370,36 +353,14 @@ class ShopAddressList(APIView):
 
     def get(self, request):
         params = request.query_params.dict()
-        open_id = wx_utils.get_openid(params.get('token'))
+        open_id = wx_utils.get_openid(params.pop('token'))
         key = params.get('key')
+        query_set = mo.Address.objects.filter(userId=open_id).all()
+        serializer = se.AddressSerializer(query_set, many=True)
 
         json_data = {
             "code": 0,
-            "data": {
-                "result": [
-                    {
-                        "address": "新港中路397号",
-                        "areaStr": "海珠区",
-                        "cityId": "440100000000",
-                        "cityStr": "广州市",
-                        "dateAdd": "2022-01-01 10:08:08",
-                        "dateUpdate": "2022-01-01 10:11:25",
-                        "districtId": "440105000000",
-                        "id": 1,
-                        "isDefault": True,
-                        "linkMan": "张三",
-                        "mobile": "020-81167888",
-                        "provinceId": "440000000000",
-                        "provinceStr": "广东省",
-                        "status": 0,
-                        "statusStr": "正常",
-                        "uid": 1351478,
-                        "userId": 951
-                    }
-                ],
-                "totalRow": 3,
-                "totalPage": 1
-            },
+            "data": serializer.data,
             "msg": "success"
         }
         return Response(json_data)
@@ -466,32 +427,24 @@ class ShopAddressUpdate(APIView):
 
     def post(self, request):
         params = request.data
-        open_id = wx_utils.get_openid(params.get('token'))
-        key = params.get('key')
+        open_id = wx_utils.get_openid(params.pop('token'))
+        address_id = params.get('id')
+        default_address = mo.Address.objects.filter(userId=open_id).filter(isDefault=True).first()
+        if default_address:
+            default_address.isDefault = False
+            default_address.save()
+        address = mo.Address.objects.filter(userId=open_id).filter(id=address_id).first()
+        if address:
+            address.isDefault = True
+            address.save()
 
+        query_set = mo.Address.objects.filter(userId=open_id).first()
+        serializer = se.AddressSerializer(query_set)
         json_data = {
             "code": 0,
             "data": {
                 "extJson": {},
-                "info": {
-                    "address": "测试详细地址",
-                    "areaStr": "峰峰矿区",
-                    "cityId": "130400000000",
-                    "cityStr": "邯郸市",
-                    "dateAdd": "2021-10-24 21:52:32",
-                    "dateUpdate": "2022-01-01 10:16:12",
-                    "districtId": "130406000000",
-                    "id": 1,
-                    "isDefault": False,
-                    "linkMan": "测试",
-                    "mobile": "13500000000",
-                    "provinceId": "130000000000",
-                    "provinceStr": "河北省",
-                    "status": 0,
-                    "statusStr": "正常",
-                    "uid": 1351478,
-                    "userId": 951
-                }
+                "info": serializer.data
             },
             "msg": "success"
         }
@@ -774,53 +727,15 @@ class OrderCreate(APIView):
             # 真实下单是没有calculate字段
             params.update({
                 'userId': user_id,
-                'orderNumber': str(int(time.time()*1000))
+                'orderNumber': str(int(time.time()*1000)),
+                'payPrices': total_prices,
+                'amountReal': total_prices,
+                'goodsNumber': goods_numbers,
             })
             mo.Order.objects.create(**params)
             json_data = {
                 "code": 0,
-                "data": {
-                    "amount": 0,
-                    "amountCard": 0,
-                    "amountCoupons": 0,
-                    "amountLogistics": 0,
-                    "amountReal": total_prices,
-                    "amountRefundTotal": 0,
-                    "amountTax": 0,
-                    "amountTaxGst": 0,
-                    "amountTaxService": 0,
-                    "autoDeliverStatus": 0,
-                    "dateAdd": "2021-12-09 10:51:19",
-                    "dateClose": "2021-12-09 11:02:20",
-                    "differHours": 0,
-                    "goodsNumber": goods_numbers,
-                    "hasRefund": False,  # 是否退款
-                    "id": 1236848,  # 支付id，使用订单id
-                    "ip": "183.129.193.150",  # 用户ip地址
-                    "isCanHx": False,
-                    "isDelUser": False,
-                    "isEnd": False,
-                    "isHasBenefit": False,
-                    "isNeedLogistics": True,
-                    "isPay": False,
-                    "isScoreOrder": False,
-                    "isSuccessPingtuan": False,
-                    "jd8Status": 0,
-                    "orderNumber": "21120910519510010",  # 订单id
-                    "orderType": 0,
-                    "periodAutoPay": False,
-                    "pid": 0,
-                    "qudanhao": "0000",
-                    "refundStatus": 0,
-                    "remark": "",
-                    "score": 0,
-                    "scoreDeduction": 0,
-                    "shopId": 0,
-                    "status": 0,  # 待支付
-                    "statusStr": "待支付",
-                    "trips": 0,
-                    "type": 0
-                },
+                "data": {},
                 "msg": "success"
             }
         else:
@@ -828,18 +743,9 @@ class OrderCreate(APIView):
             json_data = {
                 "code": 0,
                 "data": {
-                    # "amountTaxService": 0,
-                    # "deductionMoney": 0,
                     "amountReal": total_prices,
                     "isNeedLogistics": True,   # 选择配送方式
-                    # "amountTotle": 0,
-                    # "overseas": False,
-                    # "amountLogistics": 0,
-                    # "score": 0,
-                    # "couponAmount": 0,
                     "goodsNumber": goods_numbers,
-                    # "amountTaxGst": 0,
-                    # "amountTax": 0
                 },
                 "msg": "success"
             }
@@ -863,27 +769,16 @@ class OrderList(APIView):
         serializer = se.OrderSerializer(page_data, many=True)
 
         goods_map = {}
-        order_list = []
         for order in serializer.data:
             goods_list = json.loads(order.get('goodsJsonStr'))
-            total_price = 0
-            total_num = 0
-            nuw_goods = {}
-            for goods in goods_list:
-                total_num += goods['number']
-                total_price += goods['price']
             goods_map[order.get('id')] = goods_list
-            nuw_goods.update(order)
-            nuw_goods['goodsNumber'] = total_num
-            nuw_goods['amountReal'] = total_price
-            order_list.append(nuw_goods)
         json_data = {
             "code": 0,
             "data": {
                 "totalRow": pg.page.paginator.count,
                 "logisticsMap": goods_map,
                 "totalPage": pg.page.paginator.num_pages,
-                "orderList": order_list,
+                "orderList": serializer.data,
                 "goodsMap": goods_map
             },
             "msg": "success"

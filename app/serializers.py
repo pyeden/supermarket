@@ -109,3 +109,11 @@ class ShopAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = m.ShopAddress
         fields = '__all__'
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    """序列化"""
+
+    class Meta:
+        model = m.Address
+        fields = '__all__'
