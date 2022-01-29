@@ -5,9 +5,17 @@ import time
 import requests
 from cryptography.fernet import Fernet
 from django.contrib.auth.models import User, Group
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, InvalidPage
 from django.db import connections
 from django.db.models import Prefetch
-from rest_framework import viewsets
+from django.http import JsonResponse, Http404
+from drf_haystack.generics import HaystackGenericAPIView
+from drf_haystack.viewsets import HaystackViewSet
+from haystack.forms import ModelSearchForm
+from haystack.generic_views import RESULTS_PER_PAGE
+from haystack.query import EmptySearchQuerySet
+from haystack.views import SearchView
+from rest_framework import viewsets, mixins
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -16,6 +24,7 @@ from app import models as mo
 from app import common
 from app.paginations import NoticeListPagination
 from app import serializers as se
+from app.search_indexes import GoodsIndex
 from utils import wx_utils, exception_utils, common_utils, time_utils
 
 
@@ -40,6 +49,114 @@ class GroupViewSet(viewsets.ModelViewSet):
         params = self.request.query_params.dict()
         queryset = super().get_queryset().filter(**params).order_by('-list_order')
         return queryset
+
+
+class HaystackSearch(SearchView):
+
+    def __init__(self):
+        super(HaystackSearch, self).__init__()
+
+    def build_form(self, form_kwargs=None):
+        """
+        Instantiates the form the class should use to process the search query.
+        """
+        data = None
+        kwargs = {"load_all": self.load_all}
+        if form_kwargs:
+            kwargs.update(form_kwargs)
+
+        if self.request.method == 'POST':
+            try:
+                prams = json.loads(self.request.body.decode())
+                data = {
+                    'q': prams.pop('k')
+                }
+            except Exception as e:
+                print(e)
+
+        if self.searchqueryset is not None:
+            kwargs["searchqueryset"] = self.searchqueryset
+
+        return self.form_class(data, **kwargs)
+
+    def build_page(self):
+        try:
+            prams = json.loads(self.request.body.decode())
+            page_no = int(prams.get("page", 1))
+        except (TypeError, ValueError):
+            raise Http404("Not a valid number for page.")
+
+        if page_no < 1:
+            raise Http404("Pages should be 1 or greater.")
+        paginator = Paginator(self.results, self.results_per_page)
+        try:
+            page = paginator.page(page_no)
+        except InvalidPage:
+            raise Http404("No such page!")
+        return paginator, page
+
+    def create_response(self):
+
+        context = self.get_context()
+        json_data = []
+        for result in (item.object for item in context['page'].object_list):
+            json_data.append(se.GoodsSerializer(result).data)
+        result = {"code": 0, "msg": 'Search successfully！', "data": {'result': json_data}}
+        return JsonResponse(result)
+
+
+def basic_search(
+        request,
+        load_all=True,
+        form_class=ModelSearchForm,
+        searchqueryset=None,
+        extra_context=None,
+        results_per_page=None
+):
+    """
+    """
+    query = ""
+    results = EmptySearchQuerySet()
+
+    prams = json.loads(request.body.decode())
+    query_data = {
+        'q': prams.pop('k')
+    }
+    if query_data:
+        form = form_class(query_data, searchqueryset=searchqueryset, load_all=load_all)
+
+        if form.is_valid():
+            query = form.cleaned_data["q"]
+            results = form.search()
+    else:
+        form = form_class(searchqueryset=searchqueryset, load_all=load_all)
+
+    paginator = Paginator(results, results_per_page or RESULTS_PER_PAGE)
+
+    try:
+        page = paginator.page(int(prams.get("page", 1)))
+    except InvalidPage:
+        raise Http404("No such page of results!")
+
+    context = {
+        "form": form,
+        "page": page,
+        "paginator": paginator,
+        "query": query,
+        "suggestion": None,
+    }
+
+    if results.query.backend.include_spelling:
+        context["suggestion"] = form.get_suggestion()
+
+    if extra_context:
+        context.update(extra_context)
+
+    json_data = []
+    for result in (item.object for item in page.object_list):
+        json_data.append(se.GoodsSerializer(result).data)
+    result = {"code": 0, "msg": 'Search successfully！', "data": {'result': json_data}}
+    return JsonResponse(result)
 
 
 class ConfigList(APIView):

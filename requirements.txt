@@ -5,11 +5,13 @@ charset-normalizer==2.0.10
 cryptography==36.0.1
 Django==3.2.5
 django-filter==21.1
+django-haystack==3.1.1
 django-simpleui==2022.1
 djangorestframework==3.13.1
 idna==3.3
 importlib-metadata==4.10.0
 install==1.3.5
+jieba==0.42.1
 Markdown==3.3.6
 Naked==0.1.31
 pip==21.2.4
@@ -24,4 +26,5 @@ sqlparse==0.4.1
 typing-extensions==3.10.0.2
 urllib3==1.26.8
 wheel==0.37.1
+Whoosh==2.7.4
 zipp==3.7.0

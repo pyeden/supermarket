@@ -20,6 +20,10 @@ from app import views
 
 
 urlpatterns = [
+
+    # path("api/v1/shop/goods/list/v2", views.basic_search, name='search'),
+    path("api/v1/shop/goods/list/v2", views.HaystackSearch(), name='search'),
+
     path('api/v1/config/values', views.ConfigList.as_view(), name='configs'),
     # 小程序用户授权，自动注册并登录
     path('api/v1/user/wxapp/authorize', views.WxAppAuthorize.as_view(), name='authorize'),
