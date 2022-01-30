@@ -5,12 +5,8 @@ import time
 import requests
 from cryptography.fernet import Fernet
 from django.contrib.auth.models import User, Group
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage, InvalidPage
-from django.db import connections
-from django.db.models import Prefetch
+from django.core.paginator import Paginator, InvalidPage
 from django.http import JsonResponse, Http404
-from drf_haystack.generics import HaystackGenericAPIView
-from drf_haystack.viewsets import HaystackViewSet
 from haystack.forms import ModelSearchForm
 from haystack.generic_views import RESULTS_PER_PAGE
 from haystack.query import EmptySearchQuerySet
@@ -24,8 +20,7 @@ from app import models as mo
 from app import common
 from app.paginations import NoticeListPagination
 from app import serializers as se
-from app.search_indexes import GoodsIndex
-from utils import wx_utils, exception_utils, common_utils, time_utils
+from utils import wx_utils, exception_utils, common_utils
 
 
 class UserViewSet(viewsets.ModelViewSet):

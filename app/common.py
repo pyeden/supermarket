@@ -52,10 +52,10 @@ class Car:
             with connections['default'].cursor() as cursor:
                 select = ','.join([
                     "category_id as categoryId", "key", "shopId", "pic", "name",
-                    "name as subName", "minBuyNumber", "weight", "logisticsId", "minPrice as price", "selected", "stores",
+                    "name as subName", "minBuyNumber", "weight", "minPrice as price", "selected", "stores",
                     "status", "statusStr", "sellEnd", "sellStart", "status", "statusStr", "stores",
                 ])
-                sql = f'select {select}, c.id as id,g.minScore as score, g.id as goodsId, c.number as number from app_shopcart as c '\
+                sql = f'select {select}, c.id as id, g.id as goodsId, c.number as number from app_shopcart as c '\
                       'left join app_goods as g on c.goodsId = g.id where c.user_id = %s and c.is_delete=0'
                 cursor.execute(sql, [self.openid])
                 self.data = common_utils.dict_fetchall(cursor)
