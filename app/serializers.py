@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User, Group
-from drf_haystack.serializers import HaystackSerializer
 from rest_framework import serializers
 
 from app import models as m, search_indexes
@@ -119,8 +118,3 @@ class AddressSerializer(serializers.ModelSerializer):
         model = m.Address
         fields = '__all__'
 
-
-class HaystackSearchSerializer(HaystackSerializer):
-    class Meta:
-        index_classes = [search_indexes.GoodsIndex]
-        fields = '__all__'
